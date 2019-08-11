@@ -2,7 +2,6 @@ const express = require('express')
 // const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 const fs = require('fs');
-
 // mongoose.connect('mongodb://localhost/psEval9', { useNewUrlParser: true })
 
 const app = express()
@@ -22,33 +21,26 @@ app.use('/public', express.static(__dirname + '/public'));
 app.use(express.static('public'));
 
 // const mainRoutes = require('./routes/main');
-// const productRoutes = require('./routes/product');
-// const reviewRoutes = require('./routes/review');
-
-// app.use('/', mainRoutes)
-// app.use('/products', productRoutes);
-// app.use('/reviews', reviewRoutes);
+// app.use('/', mainRoutes);
 
 app.get('/:file', (req, res) => {
-
-  var file = req.params.file;
-  // console.log(file);
-  res.sendFile('/public/' + file);
+  let file = req.params.file;
+  let path = __dirname + '/public/' + file;
+  res.sendFile(path);
 });
 
 app.post('/:file', (req, res) => {
-  var file = req.params.file;
+  let file = req.params.file;
   let path = __dirname + '/public/' + file;
   // var regex = /><\/path>/g;
   // let svgStyled = req.body.data.replace(regex, 'style="stroke-width:5></path >"');
-  
   fs.writeFile(path, req.body.data, (err) => {
     if (err) throw err;
     console.log('The file has been saved!');
     res.send('yep, data passed upward.');
   });
-
 })
+
 
 app.listen(8000, () => {
   console.log('Node.js listening on port ' + 8000)
