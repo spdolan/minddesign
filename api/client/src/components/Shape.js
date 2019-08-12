@@ -11,6 +11,7 @@ scene.background = new THREE.Color(0xb0b0b0);
 var helper = new THREE.GridHelper(160, 10);
 helper.rotation.x = Math.PI / 2;
 scene.add(helper);
+console.log(window);
 // var camera = new THREE.PerspectiveCamera(75, ((window.innerWidth * 0.5) - (window.innerWidth * 0.1)) / ((window.innerHeight * 0.5)), 0.1, 1000);
 var camera = new THREE.PerspectiveCamera(50, ((window.innerWidth * 0.5) - (window.innerWidth * 0.1)) / ((window.innerHeight * 0.5)), 1, 1000);
 camera.position.set(0, 0, 200);
@@ -230,7 +231,7 @@ class Shape extends Component {
     // });
     // scene.add(this.props.currentMesh);
 
-    // window.addEventListener('resize', onWindowResize, false);
+    window.addEventListener('resize', onWindowResize, false);
     // createGUI();
     animate();
     // === THREE.JS EXAMPLE CODE END ===
