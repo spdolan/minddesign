@@ -1,7 +1,8 @@
 const express = require('express')
+const http = require('http')
+const bodyParser = require('body-parser')
 const cors = require('cors')
 // const mongoose = require('mongoose')
-const bodyParser = require('body-parser')
 const fs = require('fs');
 // mongoose.connect('mongodb://localhost/psEval9', { useNewUrlParser: true })
 
@@ -49,6 +50,8 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-app.listen(8000, () => {
-  console.log('Node.js listening on port ' + 8000)
-});
+// Server Setup
+const port = process.env.PORT || 8000;
+const server = http.createServer(app);
+server.listen(port);
+console.log('Server listening on:', port);
