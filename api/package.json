@@ -12,6 +12,7 @@
   "dependencies": {
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "mocha": "^6.2.0",
     "three": "^0.107.0"

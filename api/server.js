@@ -1,4 +1,5 @@
 const express = require('express')
+const cors = require('cors')
 // const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 const fs = require('fs');
@@ -6,17 +7,11 @@ const fs = require('fs');
 
 const app = express()
 
+app.use(cors());
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({
   extended: true
 }))
-
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
-
 app.use('/public', express.static(__dirname + '/public'));  
 app.use(express.static('public'));
 
