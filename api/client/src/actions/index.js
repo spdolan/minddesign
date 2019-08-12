@@ -6,7 +6,7 @@ const ROOT_URL = "http://localhost:8000/";
 
 export const updateDrawing = (svgString) => dispatch => {
   // console.log(svgString);
-  axios.post(`${ROOT_URL}sig.svg`,{
+  axios.post(`/sig.svg`,{
     data: svgString
   }).then(function (response) {
     // console.log(response);
@@ -18,7 +18,7 @@ export const updateDrawing = (svgString) => dispatch => {
 };
 
 export const renderDrawing = (queryObject) => dispatch => {
-  let queryUrl = `${ROOT_URL}?`;
+  let queryUrl = `/?`;
   let queryString = ``;
   const { fileString, extrude } = queryObject;
 
