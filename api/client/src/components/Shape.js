@@ -230,7 +230,7 @@ class Shape extends Component {
     // });
     // scene.add(this.props.currentMesh);
 
-    window.addEventListener('resize', onWindowResize, false);
+    // window.addEventListener('resize', onWindowResize, false);
     // createGUI();
     animate();
     // === THREE.JS EXAMPLE CODE END ===
