@@ -22,7 +22,7 @@ var controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.screenSpacePanning = true;
 
 var guiData = {
-  currentURL: 'http://localhost:8000/tiger.svg',
+  currentURL: '/tiger.svg',
   extrude: false
 };
 
@@ -223,7 +223,7 @@ class Shape extends Component {
     // // use ref as a mount point of the Three.js scene instead of the document.body
     this.mount.appendChild(renderer.domElement);
     // load a SVG resource
-    loadSVG('http://localhost:8000/tiger.svg', false);
+    loadSVG('/tiger.svg', false);
     // this.props.renderDrawing({
     //   fileString:'tiger', 
     //   extrude: 'flat'
@@ -239,7 +239,7 @@ class Shape extends Component {
   componentDidUpdate(){
   //  console.log(scene);
     clearThree(scene);
-    loadSVG('http://localhost:8000/sig.svg', true);
+    loadSVG('/sig.svg', true);
     // this.props.renderDrawing({
     //   fileString: 'sig',
     //   extrude: 'extrude'
