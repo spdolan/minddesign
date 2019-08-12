@@ -6,7 +6,7 @@ const ROOT_URL = "http://localhost:8000/";
 
 export const updateDrawing = (svgString) => dispatch => {
   // console.log(svgString);
-  axios.post(`${ROOT_URL}sig.svg`,{
+  axios.post(`public/sig.svg`,{
     data: svgString
   }).then(function (response) {
     // console.log(response);

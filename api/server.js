@@ -18,13 +18,13 @@ app.use(express.static('public'));
 // const mainRoutes = require('./routes/main');
 // app.use('/', mainRoutes);
 
-app.get('/:file', (req, res) => {
+app.get('/public/:file', (req, res) => {
   let file = req.params.file;
   let path = __dirname + '/public/' + file;
   res.sendFile(path);
 });
 
-app.post('/:file', (req, res) => {
+app.post('/public/:file', (req, res) => {
   let file = req.params.file;
   let path = __dirname + '/public/' + file;
   // var regex = /><\/path>/g;

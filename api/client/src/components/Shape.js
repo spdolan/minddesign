@@ -223,7 +223,7 @@ class Shape extends Component {
     // // use ref as a mount point of the Three.js scene instead of the document.body
     this.mount.appendChild(renderer.domElement);
     // load a SVG resource
-    loadSVG('/tiger.svg', false);
+    loadSVG('public/tiger.svg', false);
     // this.props.renderDrawing({
     //   fileString:'tiger', 
     //   extrude: 'flat'
@@ -239,7 +239,7 @@ class Shape extends Component {
   componentDidUpdate(){
   //  console.log(scene);
     clearThree(scene);
-    loadSVG('/sig.svg', true);
+    loadSVG('public/sig.svg', true);
     // this.props.renderDrawing({
     //   fileString: 'sig',
     //   extrude: 'extrude'
