@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import Canvas from './Canvas';
 import Shape from './Shape';
-import WorkingShape from './WorkingShape';
 
 class App extends Component {
   constructor(props){
@@ -12,11 +11,10 @@ class App extends Component {
 
   }
   
-
   render() {
     return (
       <div className='container main-app'>
-        <div className='jumbotron text-center mt-4'>
+        <div className='jumbotron text-center'>
           <h1>Working Title</h1>
         </div>
         <div className='row mb-4'>

@@ -15,10 +15,10 @@ scene.add(helper);
 // var camera = new THREE.PerspectiveCamera(75, ((window.innerWidth * 0.5) - (window.innerWidth * 0.1)) / ((window.innerHeight * 0.5)), 0.1, 1000);
 var threeWidth, threeHeight;
 if (window.innerWidth <= 768) {
-  threeWidth = ((window.innerWidth * 0.7));
+  threeWidth = ((window.innerWidth * 0.8));
   threeHeight = ((window.innerHeight * 0.5));
 } else {
-  threeWidth = ((window.innerWidth * 0.4));
+  threeWidth = ((window.innerWidth * 0.37));
   threeHeight = ((window.innerHeight * 0.5));
 }
 var camera = new THREE.PerspectiveCamera(50, threeWidth / threeHeight, 1, 1000);
@@ -35,8 +35,16 @@ var guiData = {
   extrude: false
 };
 
-// instantiate a loader
+// instantiate a loader, exporter, and group
 var loader = new THREE.SVGLoader();
+var exporter = new THREE.STLExporter();
+var group;
+
+//append a link, from our Three.js examples
+var link = document.createElement('a');
+link.style.display = 'none';
+document.body.appendChild(link);
+
 // console.log(loader);
 var animate = function () {
   requestAnimationFrame(animate);
@@ -45,13 +53,11 @@ var animate = function () {
 
 var onWindowResize = function () {
 
-  console.log(window.innerWidth)
-
   if (window.innerWidth <= 768) {
     threeWidth = ((window.innerWidth * 0.8));
     threeHeight = ((window.innerHeight * 0.5));
   } else {
-    threeWidth = ((window.innerWidth * 0.4));
+    threeWidth = ((window.innerWidth * 0.37));
     threeHeight = ((window.innerHeight * 0.5));
   }
 
@@ -66,9 +72,46 @@ var clearThree = function (obj) {
     obj.remove(obj.children[(obj.children.length - 1)]);
   }
   if (obj.geometry) obj.geometry.dispose()
-  if (obj.material) obj.material.dispose()
+  // console.log(obj.material)
+
+  if (obj.material !== undefined){
+    if (obj.material.length !== undefined) {
+      obj.material.forEach(material => {
+        material.dispose();
+      });
+    } else {
+      obj.material.dispose();
+    }
+  }
+
+  
+
   if (obj.texture) obj.texture.dispose()
 } 
+
+var exportASCII = function(meshGroup) {
+  var result = exporter.parse(meshGroup);
+  // let objectExtension = objectName + '.stl'
+  saveString(result, 'thing.stl');
+}
+
+var exportBinary = function (meshGroup) {
+  var result = exporter.parse(meshGroup, { binary: true });
+  saveArrayBuffer(result, 'thing.stl');
+}
+
+var saveString = function(text, filename) {
+  save(new Blob([text], { type: 'text/plain' }), filename);
+}
+var saveArrayBuffer = function(buffer, filename) {
+  save(new Blob([buffer], { type: 'application/octet-stream' }), filename);
+}
+
+var save = function (blob, filename) {
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
+}
 
 const arrayToPoints = function(array){
   let removeZeroArray = array.filter(point => { return point !== 0 });  
@@ -100,10 +143,10 @@ var loadSVG = function (svgUrl, extrude){
     function (data) {
 
       var paths = data.paths;
-      var group = new THREE.Group();
+      group = new THREE.Group();
       var scalarSettings;
       var extrudeSettings = {
-        depth: 10,
+        depth: 6,
         steps: 1,
         bevelEnabled: false,
         bevelThickness: 2,
@@ -129,25 +172,7 @@ var loadSVG = function (svgUrl, extrude){
 
       for (var i = 0; i < paths.length; i++) {
         //let's add our printing base here!
-        if (extrude && i === 0) {
-
-          var baseRadius = 135;
-          var baseHeight = 5;
-          var baseGeometry = new THREE.CylinderBufferGeometry(baseRadius, baseRadius, baseHeight, 64);
-          var baseMaterial = new THREE.MeshBasicMaterial({
-            color: 0x00ffff,
-            opacity: 0.3,
-            transparent: true,
-            side: THREE.FrontSide,
-            depthWrite: false
-            // wireframe: true
-          });
-          var cylinder = new THREE.Mesh(baseGeometry, baseMaterial);
-          cylinder.position.set(-(group.position.x * (1 + group.scale.x)) + baseHeight, (group.position.y * (1 - group.scale.y)) + baseHeight, baseHeight / 2);
-          cylinder.rotation.set(Math.PI / 2, 0, 0);
-          group.add(cylinder);
-        }
-
+        
         var path = paths[i];
         var fillColor = path.userData.style.fill;
 
@@ -180,6 +205,16 @@ var loadSVG = function (svgUrl, extrude){
             // wireframe: true
           });
 
+          //place cylinder and offsetting stroke material here
+          var baseMaterial = new THREE.MeshBasicMaterial({
+            color: 0x00ffff,
+            opacity: 0.3,
+            transparent: true,
+            side: THREE.DoubleSide,
+            depthWrite: false,
+            wireframe: false
+          });
+
           for (var k = 0, kl = path.subPaths.length; k < kl; k++) {
             var subPath = path.subPaths[k];
             var strokeGeometry, strokeMesh, threeDGeometry;
@@ -196,6 +231,17 @@ var loadSVG = function (svgUrl, extrude){
                     group.add(strokeMesh);
                   }
                 }
+              }
+
+              if (i === 0) {
+
+                var baseRadius = 135;
+                var baseHeight = 3;
+                var baseGeometry = new THREE.CylinderBufferGeometry(baseRadius, baseRadius, baseHeight, 64);
+                var cylinder = new THREE.Mesh(baseGeometry, [strokeMaterial, baseMaterial]);
+                cylinder.position.set(-(group.position.x * (1 + group.scale.x)) + baseHeight, (group.position.y * (1 - group.scale.y)) + baseHeight, baseHeight / 2);
+                cylinder.rotation.set(Math.PI / 2, 0, 0);
+                group.add(cylinder);
               }
             } 
             else {
@@ -274,6 +320,15 @@ class Shape extends Component {
       <div className='container text-center'>
         <div className='row'>
           <div className='col-12'>
+            <button
+              className='btn btn-block btn-success mb-2'
+              onClick={e => {
+                e.preventDefault();
+                exportBinary(group);
+              }}
+            >
+              Save As 3D Model
+            </button>
             <div ref={ref => (this.mount = ref)} 
               
             />
