@@ -15,10 +15,10 @@ scene.add(helper);
 // var camera = new THREE.PerspectiveCamera(75, ((window.innerWidth * 0.5) - (window.innerWidth * 0.1)) / ((window.innerHeight * 0.5)), 0.1, 1000);
 var threeWidth, threeHeight;
 if (window.innerWidth <= 768) {
-  threeWidth = ((window.innerWidth * 0.8) - (window.innerWidth * 0.1));
+  threeWidth = ((window.innerWidth * 0.7));
   threeHeight = ((window.innerHeight * 0.5));
 } else {
-  threeWidth = ((window.innerWidth * 0.5) - (window.innerWidth * 0.1));
+  threeWidth = ((window.innerWidth * 0.4));
   threeHeight = ((window.innerHeight * 0.5));
 }
 var camera = new THREE.PerspectiveCamera(50, threeWidth / threeHeight, 1, 1000);
@@ -48,10 +48,10 @@ var onWindowResize = function () {
   console.log(window.innerWidth)
 
   if (window.innerWidth <= 768) {
-    threeWidth = ((window.innerWidth * 0.8) - (window.innerWidth * 0.1));
+    threeWidth = ((window.innerWidth * 0.7));
     threeHeight = ((window.innerHeight * 0.5));
   } else {
-    threeWidth = ((window.innerWidth * 0.5) - (window.innerWidth * 0.1));
+    threeWidth = ((window.innerWidth * 0.4));
     threeHeight = ((window.innerHeight * 0.5));
   }
 
