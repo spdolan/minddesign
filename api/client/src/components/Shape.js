@@ -324,7 +324,7 @@ class Shape extends Component {
               className='btn btn-block btn-success mb-2'
               onClick={e => {
                 e.preventDefault();
-                exportBinary(group);
+                // exportBinary(group);
               }}
             >
               Save As 3D Model
