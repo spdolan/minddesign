@@ -48,7 +48,7 @@ var onWindowResize = function () {
   console.log(window.innerWidth)
 
   if (window.innerWidth <= 768) {
-    threeWidth = ((window.innerWidth * 0.7));
+    threeWidth = ((window.innerWidth * 0.8));
     threeHeight = ((window.innerHeight * 0.5));
   } else {
     threeWidth = ((window.innerWidth * 0.4));
@@ -271,15 +271,21 @@ class Shape extends Component {
 
   render() {
     return (
-      <>
-        <div ref={ref => (this.mount = ref)} />
-        <button
-          className='btn btn-block btn-primary'
-          onClick={e => clearThree(scene)}
-        >
-          Clear Canvas
-        </button>
-      </>
+      <div className='container text-center'>
+        <div className='row'>
+          <div className='col-12'>
+            <div ref={ref => (this.mount = ref)} 
+              
+            />
+            <button
+              className='btn btn-block btn-primary'
+              onClick={e => clearThree(scene)}
+            >
+              Clear Canvas
+            </button>
+          </div>
+        </div>
+      </div>
     )
   }
 }

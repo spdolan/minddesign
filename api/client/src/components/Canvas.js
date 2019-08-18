@@ -29,9 +29,9 @@ class Canvas extends Component {
 
   render() {
     return (
-      <div className='container float-right'>
+      <div className='container text-center'>
         <div className='row'>
-          <div className='col-md-12 pr-3'>
+          <div className='col-12'>
             <SignatureCanvas
               ref={(ref) => { this.sigPad = ref }}
               penColor='black'
@@ -44,25 +44,24 @@ class Canvas extends Component {
                 mindistance: 10,
                 throttle: 0,
                 // dotsize: 20,
-                className: 'sigCanvas offset-md-2 mb-2'
+                className: 'sigCanvas mb-2'
               }}
             />
           </div>
         </div>
         <div className='row'>
-          <div className='col-md-12'>
-            <div className='offset-md-4'>
-              <button className='btn btn-secondary btn-md' onClick={this.clear}>
+          <div className='col-12'>
+            
+              <button className='btn btn-secondary btn-lg mr-4' onClick={this.clear}>
                 Clear
-              </button>|
-              <button className='btn btn-success btn-md' onClick={this.renderDrawing}>
+              </button>
+              <button className='btn btn-success btn-lg' onClick={this.renderDrawing}>
                 Render
               </button>
 
             {/* {this.state.svgDataURL ?
               <img className='thumbnail' src={this.state.svgDataURL} />
               : null} */}
-            </div>
           </div>
         </div>  
       </div>
