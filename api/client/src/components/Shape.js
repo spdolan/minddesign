@@ -11,13 +11,21 @@ scene.background = new THREE.Color(0xb0b0b0);
 var helper = new THREE.GridHelper(160, 10);
 helper.rotation.x = Math.PI / 2;
 scene.add(helper);
-console.log(window);
+// console.log(window);
 // var camera = new THREE.PerspectiveCamera(75, ((window.innerWidth * 0.5) - (window.innerWidth * 0.1)) / ((window.innerHeight * 0.5)), 0.1, 1000);
-var camera = new THREE.PerspectiveCamera(50, ((window.innerWidth * 0.5) - (window.innerWidth * 0.1)) / ((window.innerHeight * 0.5)), 1, 1000);
+var threeWidth, threeHeight;
+if (window.innerWidth <= 768) {
+  threeWidth = ((window.innerWidth * 0.8) - (window.innerWidth * 0.1));
+  threeHeight = ((window.innerHeight * 0.5));
+} else {
+  threeWidth = ((window.innerWidth * 0.5) - (window.innerWidth * 0.1));
+  threeHeight = ((window.innerHeight * 0.5));
+}
+var camera = new THREE.PerspectiveCamera(50, threeWidth / threeHeight, 1, 1000);
 camera.position.set(0, 0, 200);
 var renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(((window.innerWidth * 0.5) - (window.innerWidth * 0.1)), ((window.innerHeight * 0.5)));
+renderer.setSize(threeWidth, threeHeight);
 //add in pan/view options
 var controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.screenSpacePanning = true;
@@ -36,9 +44,20 @@ var animate = function () {
 };
 
 var onWindowResize = function () {
-  camera.aspect = ((window.innerWidth * 0.5) - (window.innerWidth * 0.1)) / ((window.innerHeight * 0.5));
+
+  console.log(window.innerWidth)
+
+  if (window.innerWidth <= 768) {
+    threeWidth = ((window.innerWidth * 0.8) - (window.innerWidth * 0.1));
+    threeHeight = ((window.innerHeight * 0.5));
+  } else {
+    threeWidth = ((window.innerWidth * 0.5) - (window.innerWidth * 0.1));
+    threeHeight = ((window.innerHeight * 0.5));
+  }
+
+  camera.aspect = threeWidth / threeHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize((window.innerWidth * 0.5) - (window.innerWidth * 0.1), (window.innerHeight * 0.5));
+  renderer.setSize(threeWidth, threeHeight);
 }
 
 var clearThree = function (obj) {

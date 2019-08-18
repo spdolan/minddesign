@@ -25,10 +25,10 @@ class App extends Component {
           </div>
         </div>
         <div className='row'>
-          <div className='col-md-6'>
+          <div className='col-md-6 mb-5'>
             <Shape />
           </div>
-          <div className='col-md-6 canvas'>
+          <div className='col-md-6 canvas text-center'>
             <Canvas />
           </div>
         </div>
