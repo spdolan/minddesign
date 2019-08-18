@@ -324,6 +324,7 @@ class Shape extends Component {
               className='btn btn-block btn-success mb-2'
               onClick={e => {
                 e.preventDefault();
+                alert('Feature not live yet! \n Check back in on Demo Night.')
                 // exportBinary(group);
               }}
             >
