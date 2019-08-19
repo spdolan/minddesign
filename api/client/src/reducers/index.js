@@ -5,7 +5,7 @@ import canvasReducer from './canvasReducer';
 const rootReducer = combineReducers({
   // products: ProductReducer,
   timeStamp: canvasReducer,
-  currentMesh: shapeReducer
+  currentModel: shapeReducer
 });
 
 export default rootReducer;

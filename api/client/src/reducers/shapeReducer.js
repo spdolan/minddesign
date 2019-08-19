@@ -1,16 +1,17 @@
 import CacheManager from '../cache'
-import { RENDER_DRAWING } from "../actions";
+import { RENDER_DRAWING, SET_FILE } from "../actions";
 const cache = new CacheManager();
 
-export default function (state = {}, action) {
+export default function (state = 'sig.svg', action) {
   switch (action.type) {
-    case RENDER_DRAWING:
+    case SET_FILE:
       // let newState = {
       //   ...state,
       //   filters: [...state.filters, action.filter]
       // }
       // cache.writeData('state', newState)
-      let newMesh = action.payload.data;
+      // console.log(action)
+      let newMesh = action.payload;
       return newMesh
   default:
     return state;

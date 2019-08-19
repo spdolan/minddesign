@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { renderDrawing } from '../actions';
+import { renderDrawing, setFile } from '../actions';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import THREE from "../three";
+import { GUI } from 'three/examples/js/libs/dat.gui.min.js';
 
 // === THREE.JS CODE START ===
 var scene = new THREE.Scene();
@@ -31,7 +32,7 @@ var controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.screenSpacePanning = true;
 
 var guiData = {
-  currentURL: '/tiger.svg',
+  currentModel: 'tiger.svg',
   extrude: false
 };
 
@@ -123,16 +124,7 @@ const arrayToPoints = function(array){
   return newArray;
 }
 
-// var gui;
-
-// const createGUI = function() {
-//   if (gui) gui.destroy();
-//   gui = new THREE.GUI({ width: 350 });
-//   gui.add(guiData, 'extrude').name('Extrude?').onChange(update);
-//   function update() {
-//     loadSVG(guiData.currentURL);
-//   }
-// }
+var gui;
 
 var loadSVG = function (svgUrl, extrude){
   // load a SVG resource
@@ -153,12 +145,19 @@ var loadSVG = function (svgUrl, extrude){
         bevelSize: 4,
         bevelSegments: 1
       };
+
       if (extrude) {
         
         scalarSettings = 0.6;
         group.position.x = -85;
         group.position.y = 85;
-      } else {
+
+      } else if (!extrude && svgUrl.includes('sig')) {
+        scalarSettings = 0.6;
+        group.position.x = -85;
+        group.position.y = 85;
+    }
+      else {
         scalarSettings = 0.25;
         group.position.x = -70;
         group.position.y = 70;
@@ -283,11 +282,15 @@ class Shape extends Component {
     this.state = {
       circle: true
     }
+    this.createGUI = this.createGUI.bind(this);
   }
 
   componentDidMount() {
-    // // use ref as a mount point of the Three.js scene instead of the document.body
+    // use ref as a mount point of the Three.js scene instead of the document.body
     this.mount.appendChild(renderer.domElement);
+    this.createGUI();
+
+    this.mount.prepend(gui.domElement);
     // load a SVG resource
     loadSVG('public/tiger.svg', false);
     // this.props.renderDrawing({
@@ -297,20 +300,41 @@ class Shape extends Component {
     // scene.add(this.props.currentMesh);
 
     window.addEventListener('resize', onWindowResize, false);
-    // createGUI();
+    
     animate();
+
+    
     // === THREE.JS EXAMPLE CODE END ===
   }
 
+  createGUI() {
+    if (gui) gui.destroy();
+    gui = new GUI({ width: 150 });
+    // var f1 = gui.addFolder('Flow Field');
+    const model = this.props.currentModel;
+    gui.add(guiData, 'extrude').name('Extrude?').onChange(update);
+    // scene.add(gui);
+    // gui.add(guiData, 'extrude').name('Extrude?').onChange(update);
+    // f1.open();
+    function update() {
+      clearThree(scene);
+      let myURL = 'public/' + model;
+      console.log(myURL);
+      loadSVG('public/sig.svg', guiData.extrude);
+  }
+}
+
   componentDidUpdate(){
-  //  console.log(scene);
+    // console.log(this.props.currentModel);
+    let publicUrl = 'public/' + this.props.currentModel;
     clearThree(scene);
-    loadSVG('public/sig.svg', true);
+    loadSVG(publicUrl, guiData.extrude);
     // this.props.renderDrawing({
     //   fileString: 'sig',
     //   extrude: 'extrude'
     // });
     // scene.add(this.props.currentMesh);
+    
     animate();
    
   }
@@ -324,8 +348,8 @@ class Shape extends Component {
               className='btn btn-block btn-success mb-2'
               onClick={e => {
                 e.preventDefault();
-                alert('Feature not live yet! \n Check back in on Demo Night.')
-                // exportBinary(group);
+                // alert('Feature not live yet! \n Check back in on Demo Night.')
+                exportBinary(group);
               }}
             >
               Save As 3D Model
@@ -348,7 +372,7 @@ class Shape extends Component {
 
 function mapStateToProps(state) {
   return {
-    currentMesh: state.currentMesh,
+    currentModel: state.currentModel,
     timeStamp: state.timeStamp
   };
 }

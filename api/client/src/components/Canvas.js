@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { updateDrawing } from '../actions';
+import { updateDrawing, setFile } from '../actions';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import CacheManager from '../cache';
@@ -24,6 +24,7 @@ class Canvas extends Component {
     }, () => {
         let mySVG = this.state.svgDataURL.split(',');
         this.props.updateDrawing(atob(mySVG[1]));
+        this.props.setFile('sig');
     })
   }
 
@@ -78,7 +79,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ updateDrawing}, dispatch);
+  return bindActionCreators({ updateDrawing, setFile }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Canvas);

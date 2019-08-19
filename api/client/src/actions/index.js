@@ -1,5 +1,6 @@
 import axios from "axios";
 export const SAVE_DRAWING = 'SAVE_DRAWING';
+export const SET_FILE = 'SET_FILE';
 export const RENDER_DRAWING = 'RENDER_DRAWING';
 
 const ROOT_URL = "http://localhost:8000/";
@@ -16,6 +17,17 @@ export const updateDrawing = (svgString) => dispatch => {
       console.log(error);
     });
 };
+
+export const setFile = (fileName) => dispatch => {
+  let myFile = '';
+  if(fileName !== 'tiger' && fileName !== 'sig'){
+    myFile = 'tiger.svg'
+  } else {
+    myFile = fileName + '.svg'
+  }
+
+  dispatch({ type: SET_FILE, payload: myFile })
+}
 
 export const renderDrawing = (queryObject) => dispatch => {
   let queryUrl = `${ROOT_URL}?`;
