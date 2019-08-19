@@ -99,9 +99,9 @@ app.get('/public/:file', (req, res) => {
 app.post('/public/:file', (req, res) => {
   let file = req.params.file;
   let path = __dirname + '/public/' + file;
-  // var regex = /><\/path>/g;
-  // let svgStyled = req.body.data.replace(regex, 'style="stroke-width:5></path >"');
-  fs.writeFile(path, req.body.data, (err) => {
+  var regex = /><\/path>/g;
+  let svgStyled = req.body.data.replace(regex, ' style="stroke-width:10;"></path >');
+  fs.writeFile(path, svgStyled, (err) => {
     if (err) throw err;
     console.log('The file has been saved!');
     res.send('yep, data passed upward.');

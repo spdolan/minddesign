@@ -90,6 +90,11 @@ var clearThree = function (obj) {
   if (obj.texture) obj.texture.dispose()
 } 
 
+var scaleGroup = function(meshGroup, scalar){
+  meshGroup.scale.multiplyScalar(scalar);
+  
+}
+
 var exportASCII = function(meshGroup) {
   var result = exporter.parse(meshGroup);
   // let objectExtension = objectName + '.stl'
@@ -97,8 +102,11 @@ var exportASCII = function(meshGroup) {
 }
 
 var exportBinary = function (meshGroup) {
+     
   var result = exporter.parse(meshGroup, { binary: true });
   saveArrayBuffer(result, 'thing.stl');
+  scaleGroup(group, 3.1);
+  group.updateMatrixWorld(true);
 }
 
 var saveString = function(text, filename) {
@@ -166,7 +174,7 @@ var loadSVG = function (svgUrl, extrude){
       group.scale.multiplyScalar(scalarSettings);
       
       group.scale.y *= - 1;
-
+      group.updateMatrixWorld(true);
     //  console.log(group.scale);
 
       for (var i = 0; i < paths.length; i++) {
@@ -254,11 +262,14 @@ var loadSVG = function (svgUrl, extrude){
             } 
           }
 
-          // console.log(group);
+          
           scene.add(group);
         }
+
       }
 
+      // var box = new THREE.BoxHelper(group, 0xffff00);
+      // scene.add(box);
       
     },
     // called when loading is in progresses
@@ -349,6 +360,8 @@ class Shape extends Component {
               onClick={e => {
                 e.preventDefault();
                 // alert('Feature not live yet! \n Check back in on Demo Night.')
+                scaleGroup(group, 0.3);
+                group.updateMatrixWorld(true);
                 exportBinary(group);
               }}
             >
