@@ -92,7 +92,7 @@ var clearThree = function (obj) {
 
 var scaleGroup = function(meshGroup, scalar){
   meshGroup.scale.multiplyScalar(scalar);
-  
+  meshGroup.scale.y *= - 1;
 }
 
 var exportASCII = function(meshGroup) {
