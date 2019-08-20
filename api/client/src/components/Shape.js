@@ -187,6 +187,20 @@ const createStampBase = (extrude, shape, group, materialArray, svgUrl) => {
   }
 }
 
+const createBasicMaterial = (color, opacity, transparent) => {
+  let myMaterial = new THREE.MeshBasicMaterial({
+    color: new THREE.Color().setStyle(color),
+    opacity: opacity,
+    transparent: transparent,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+    wireFrame: false
+
+  });
+
+  return myMaterial;
+}
+
 var loadSVG = function (svgUrl, extrude){
   // load a SVG resource
   loader.load(
@@ -217,14 +231,15 @@ var loadSVG = function (svgUrl, extrude){
         var fillColor = path.userData.style.fill;
 
         if (fillColor !== undefined && fillColor !== 'none') {
-          var material = new THREE.MeshBasicMaterial({
-            color: new THREE.Color().setStyle(fillColor),
-            opacity: path.userData.style.fillOpacity,
-            transparent: path.userData.style.fillOpacity < 1,
-            side: THREE.DoubleSide,
-            depthWrite: false
+          var material = createBasicMaterial(fillColor, path.userData.style.fillOpacity, path.userData.style.fillOpacity < 1);
+          // var material = new THREE.MeshBasicMaterial({
+          //   color: new THREE.Color().setStyle(fillColor),
+          //   opacity: path.userData.style.fillOpacity,
+          //   transparent: path.userData.style.fillOpacity < 1,
+          //   side: THREE.DoubleSide,
+          //   depthWrite: false
 
-          });
+          // });
           var shapes = path.toShapes(true);
           for (var j = 0; j < shapes.length; j++) {
             var shape = shapes[j];
@@ -236,14 +251,15 @@ var loadSVG = function (svgUrl, extrude){
 
         var strokeColor = path.userData.style.stroke;
         if (strokeColor !== undefined && strokeColor !== 'none') {
-          var strokeMaterial = new THREE.MeshBasicMaterial({
-            color: new THREE.Color().setStyle(strokeColor),
-            opacity: path.userData.style.strokeOpacity,
-            transparent: path.userData.style.strokeOpacity < 1,
-            side: THREE.DoubleSide,
-            depthWrite: false
-            // wireframe: true
-          });
+          var strokeMaterial = createBasicMaterial(strokeColor, path.userData.style.strokeOpacity, path.userData.style.strokeOpacity < 1);
+          // var strokeMaterial = new THREE.MeshBasicMaterial({
+          //   color: new THREE.Color().setStyle(strokeColor),
+          //   opacity: path.userData.style.strokeOpacity,
+          //   transparent: path.userData.style.strokeOpacity < 1,
+          //   side: THREE.DoubleSide,
+          //   depthWrite: false
+          //   // wireframe: true
+          // });
 
           for (var k = 0, kl = path.subPaths.length; k < kl; k++) {
             var subPath = path.subPaths[k];
@@ -283,14 +299,15 @@ var loadSVG = function (svgUrl, extrude){
 
       //add our base helper
       //place cylinder and offsetting stroke material here
-      var baseMaterial = new THREE.MeshBasicMaterial({
-        color: 0x00ffff,
-        opacity: 0.3,
-        transparent: true,
-        side: THREE.DoubleSide,
-        depthWrite: false,
-        wireframe: false
-      });
+      var baseMaterial = createBasicMaterial(0x00ffff, 0.3, true);
+      // var baseMaterial = new THREE.MeshBasicMaterial({
+      //   color: 0x00ffff,
+      //   opacity: 0.3,
+      //   transparent: true,
+      //   side: THREE.DoubleSide,
+      //   depthWrite: false,
+      //   wireframe: false
+      // });
 
       createStampBase(extrude, 'circle', group, [strokeMaterial, baseMaterial], svgUrl)
       // createStampBase(extrude, 'square', group, [strokeMaterial, baseMaterial], svgUrl)
