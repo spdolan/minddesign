@@ -33,7 +33,7 @@ controls.screenSpacePanning = true;
 
 var guiData = {
   currentModel: 'tiger.svg',
-  extrude: false
+  extrude: true
 };
 
 // instantiate a loader, exporter, and group
@@ -84,9 +84,6 @@ var clearThree = function (obj) {
       obj.material.dispose();
     }
   }
-
-  
-
   if (obj.texture) obj.texture.dispose()
 } 
 
@@ -102,11 +99,12 @@ var exportASCII = function(meshGroup) {
 }
 
 var exportBinary = function (meshGroup) {
-     
+  scaleGroup(meshGroup, 0.15);
+  meshGroup.updateMatrixWorld(true);
   var result = exporter.parse(meshGroup, { binary: true });
   saveArrayBuffer(result, 'thing.stl');
-  scaleGroup(group, 3.1);
-  group.updateMatrixWorld(true);
+  scaleGroup(meshGroup, 6.1);
+  meshGroup.updateMatrixWorld(true);
 }
 
 var saveString = function(text, filename) {
@@ -134,6 +132,61 @@ const arrayToPoints = function(array){
 
 var gui;
 
+const setInitialScale = (extrudeBoolean, svgUrl) => {
+  var scalarSettings;
+
+  //select between true/false for extrude and check for remote sig file (v1 of app)
+  //v2 of app will take in remote url and not be concerned with naming
+  if (extrudeBoolean) {
+    scalarSettings = 0.6;
+    group.position.x = -85;
+    group.position.y = 85;
+
+  } else if (!extrudeBoolean && svgUrl.includes('sig')) {
+    scalarSettings = 0.6;
+    group.position.x = -85;
+    group.position.y = 85;
+  }
+  else {
+    scalarSettings = 0.25;
+    group.position.x = -70;
+    group.position.y = 70;
+  }
+
+  //update our overall group with determined settings
+  scaleGroup(group, scalarSettings);
+  //three.js faces "away" from our perspective, so update
+  // group.scale.y *= - 1;
+  //forces our transformations
+  group.updateMatrixWorld(true);
+}
+
+const createStampBase = (extrude, shape, group, materialArray, svgUrl) => {
+  
+  var boxShape = new THREE.BoxHelper(group, 0xffff00);
+  let groupCenterX = boxShape.geometry.boundingSphere.center.x;
+  let groupCenterY = boxShape.geometry.boundingSphere.center.y;
+  
+  if(extrude && svgUrl.includes('sig')){
+    var baseShape;
+    if (shape === 'circle') {
+      var baseRadius = (1 / group.scale.x) * boxShape.geometry.boundingSphere.radius;
+      var baseHeight = 3;
+      var baseGeometry = new THREE.CylinderBufferGeometry(baseRadius, baseRadius, baseHeight, 64);
+      baseShape = new THREE.Mesh(baseGeometry, materialArray);
+      baseShape.position.set((1 / group.scale.x) * (Math.abs(group.position.x) + groupCenterX), -(1 / group.scale.y) * (Math.abs(group.position.y) - groupCenterY), baseHeight / 2);
+      baseShape.rotation.set(Math.PI / 2, 0, 0);
+      
+    } else if (shape === 'square'){
+      baseShape = new THREE.BoxHelper(group, 0xffff00);
+      
+    }
+
+    group.add(baseShape);
+    scene.updateMatrixWorld(true);
+  }
+}
+
 var loadSVG = function (svgUrl, extrude){
   // load a SVG resource
   loader.load(
@@ -144,9 +197,9 @@ var loadSVG = function (svgUrl, extrude){
 
       var paths = data.paths;
       group = new THREE.Group();
-      var scalarSettings;
+      
       var extrudeSettings = {
-        depth: 6,
+        depth: 7,
         steps: 1,
         bevelEnabled: false,
         bevelThickness: 2,
@@ -154,27 +207,7 @@ var loadSVG = function (svgUrl, extrude){
         bevelSegments: 1
       };
 
-      if (extrude) {
-        
-        scalarSettings = 0.6;
-        group.position.x = -85;
-        group.position.y = 85;
-
-      } else if (!extrude && svgUrl.includes('sig')) {
-        scalarSettings = 0.6;
-        group.position.x = -85;
-        group.position.y = 85;
-    }
-      else {
-        scalarSettings = 0.25;
-        group.position.x = -70;
-        group.position.y = 70;
-      }
-
-      group.scale.multiplyScalar(scalarSettings);
-      
-      group.scale.y *= - 1;
-      group.updateMatrixWorld(true);
+      setInitialScale(extrude, svgUrl);
     //  console.log(group.scale);
 
       for (var i = 0; i < paths.length; i++) {
@@ -212,16 +245,6 @@ var loadSVG = function (svgUrl, extrude){
             // wireframe: true
           });
 
-          //place cylinder and offsetting stroke material here
-          var baseMaterial = new THREE.MeshBasicMaterial({
-            color: 0x00ffff,
-            opacity: 0.3,
-            transparent: true,
-            side: THREE.DoubleSide,
-            depthWrite: false,
-            wireframe: false
-          });
-
           for (var k = 0, kl = path.subPaths.length; k < kl; k++) {
             var subPath = path.subPaths[k];
             var strokeGeometry, strokeMesh, threeDGeometry;
@@ -239,18 +262,8 @@ var loadSVG = function (svgUrl, extrude){
                   }
                 }
               }
-
-              if (i === 0) {
-
-                var baseRadius = 135;
-                var baseHeight = 3;
-                var baseGeometry = new THREE.CylinderBufferGeometry(baseRadius, baseRadius, baseHeight, 64);
-                var cylinder = new THREE.Mesh(baseGeometry, [strokeMaterial, baseMaterial]);
-                cylinder.position.set(-(group.position.x * (1 + group.scale.x)) + baseHeight, (group.position.y * (1 - group.scale.y)) + baseHeight, baseHeight / 2);
-                cylinder.rotation.set(Math.PI / 2, 0, 0);
-                group.add(cylinder);
-              }
             } 
+
             else {
               if (k < path.subPaths.length ){
                 strokeGeometry = new THREE.SVGLoader.pointsToStroke(subPath.getPoints(), path.userData.style);
@@ -268,9 +281,19 @@ var loadSVG = function (svgUrl, extrude){
 
       }
 
-      // var box = new THREE.BoxHelper(group, 0xffff00);
-      // scene.add(box);
-      
+      //add our base helper
+      //place cylinder and offsetting stroke material here
+      var baseMaterial = new THREE.MeshBasicMaterial({
+        color: 0x00ffff,
+        opacity: 0.3,
+        transparent: true,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        wireframe: false
+      });
+
+      createStampBase(extrude, 'circle', group, [strokeMaterial, baseMaterial], svgUrl)
+      // createStampBase(extrude, 'square', group, [strokeMaterial, baseMaterial], svgUrl)
     },
     // called when loading is in progresses
     function (xhr) {
@@ -360,8 +383,6 @@ class Shape extends Component {
               onClick={e => {
                 e.preventDefault();
                 // alert('Feature not live yet! \n Check back in on Demo Night.')
-                scaleGroup(group, 0.3);
-                group.updateMatrixWorld(true);
                 exportBinary(group);
               }}
             >
