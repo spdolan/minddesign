@@ -1,9 +1,10 @@
 import { combineReducers } from "redux";
 import shapeReducer from "./shapeReducer";
 import canvasReducer from './canvasReducer';
+import authReducer from './authReducer';
 
 const rootReducer = combineReducers({
-  // products: ProductReducer,
+  currentUser: authReducer,
   timeStamp: canvasReducer,
   currentModel: shapeReducer
 });

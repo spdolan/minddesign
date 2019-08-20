@@ -7,6 +7,16 @@ export const USER_SIGNOUT = 'USER_SIGNOUT'
 
 const ROOT_URL = "http://localhost:8000/";
 
+export const userLogin = () => dispatch => {
+  axios.get('/auth/google')
+    .then(function(response){
+      dispatch({ type: USER_SIGNIN, payload: response.user});
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+};
+
 export const updateDrawing = (svgString) => dispatch => {
   // console.log(svgString);
   axios.post(`public/sig.svg`,{

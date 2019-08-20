@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-// import {  } from '../actions';
+import { userLogin } from '../actions';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import Canvas from './Canvas';
@@ -20,7 +20,15 @@ class App extends Component {
             <input class="form-control mr-sm-2" type="search" placeholder="Search Designs" aria-label="Search" ></input>
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
           </form> */}
-          <button className="btn btn-danger my-2 my-sm-0" type="submit">Login <i className="fab fa-google"></i></button>
+          <button 
+            className="btn btn-danger my-2 my-sm-0" 
+            onClick={e => {
+              e.preventDefault();
+              
+            }}
+          >
+            Login <i className="fab fa-google"></i>
+          </button>
 
         </nav>
         <div className='row mb-4'>
@@ -48,13 +56,13 @@ class App extends Component {
 
 function mapStateToProps(state) {
   return {
-    // products: state.products,
+    currentUser: state.currentUser
     // categories: state.categories
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({  }, dispatch);
+  return bindActionCreators({ userLogin }, dispatch);
 }
 
-export default connect(null, null)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);
