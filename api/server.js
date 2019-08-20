@@ -8,7 +8,7 @@ const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 const cookieSession = require('cookie-session')
 const User = require('./schema/user')
-
+const nodeSlicer = require('node-slic3r')
 const app = express()
 
 mongoose.connect('mongodb://localhost/stampage', { useNewUrlParser: true })
@@ -107,6 +107,7 @@ app.post('/public/:file', (req, res) => {
     res.send('yep, data passed upward.');
   });
 })
+
 
 if (process.env.NODE_ENV === 'production') {
   // Express will serve up production assets

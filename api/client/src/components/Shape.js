@@ -33,7 +33,7 @@ controls.screenSpacePanning = true;
 
 var guiData = {
   currentModel: 'tiger.svg',
-  extrude: true
+  extrude: false
 };
 
 // instantiate a loader, exporter, and group
@@ -89,6 +89,7 @@ var clearThree = function (obj) {
 
 var scaleGroup = function(meshGroup, scalar){
   meshGroup.scale.multiplyScalar(scalar);
+  //three.js faces "away" from our perspective, so update
   meshGroup.scale.y *= - 1;
 }
 
@@ -155,7 +156,6 @@ const setInitialScale = (extrudeBoolean, svgUrl) => {
 
   //update our overall group with determined settings
   scaleGroup(group, scalarSettings);
-  //three.js faces "away" from our perspective, so update
   // group.scale.y *= - 1;
   //forces our transformations
   group.updateMatrixWorld(true);
@@ -209,10 +209,10 @@ var loadSVG = function (svgUrl, extrude){
     // called when the resource is loaded
     function (data) {
 
-      var paths = data.paths;
+      const paths = data.paths;
       group = new THREE.Group();
       
-      var extrudeSettings = {
+      const extrudeSettings = {
         depth: 7,
         steps: 1,
         bevelEnabled: false,
@@ -222,55 +222,39 @@ var loadSVG = function (svgUrl, extrude){
       };
 
       setInitialScale(extrude, svgUrl);
-    //  console.log(group.scale);
 
-      for (var i = 0; i < paths.length; i++) {
+      for (let i = 0; i < paths.length; i++) {
         //let's add our printing base here!
         
-        var path = paths[i];
-        var fillColor = path.userData.style.fill;
+        const path = paths[i];
+        const fillColor = path.userData.style.fill;
 
         if (fillColor !== undefined && fillColor !== 'none') {
-          var material = createBasicMaterial(fillColor, path.userData.style.fillOpacity, path.userData.style.fillOpacity < 1);
-          // var material = new THREE.MeshBasicMaterial({
-          //   color: new THREE.Color().setStyle(fillColor),
-          //   opacity: path.userData.style.fillOpacity,
-          //   transparent: path.userData.style.fillOpacity < 1,
-          //   side: THREE.DoubleSide,
-          //   depthWrite: false
+          const material = createBasicMaterial(fillColor, path.userData.style.fillOpacity, path.userData.style.fillOpacity < 1);
 
-          // });
-          var shapes = path.toShapes(true);
-          for (var j = 0; j < shapes.length; j++) {
-            var shape = shapes[j];
-            var geometry = new THREE.ShapeBufferGeometry(shape);
-            var mesh = new THREE.Mesh(geometry, material);
+          const shapes = path.toShapes(true);
+          for (let j = 0; j < shapes.length; j++) {
+            const shape = shapes[j];
+            const geometry = new THREE.ShapeBufferGeometry(shape);
+            const mesh = new THREE.Mesh(geometry, material);
             group.add(mesh);
           }
         }
 
-        var strokeColor = path.userData.style.stroke;
+        const strokeColor = path.userData.style.stroke;
         if (strokeColor !== undefined && strokeColor !== 'none') {
           var strokeMaterial = createBasicMaterial(strokeColor, path.userData.style.strokeOpacity, path.userData.style.strokeOpacity < 1);
-          // var strokeMaterial = new THREE.MeshBasicMaterial({
-          //   color: new THREE.Color().setStyle(strokeColor),
-          //   opacity: path.userData.style.strokeOpacity,
-          //   transparent: path.userData.style.strokeOpacity < 1,
-          //   side: THREE.DoubleSide,
-          //   depthWrite: false
-          //   // wireframe: true
-          // });
 
-          for (var k = 0, kl = path.subPaths.length; k < kl; k++) {
-            var subPath = path.subPaths[k];
+          for (let k = 0, kl = path.subPaths.length; k < kl; k++) {
+            const subPath = path.subPaths[k];
             var strokeGeometry, strokeMesh, threeDGeometry;
 
             if (extrude) {
               if (k < path.subPaths.length) {
                 strokeGeometry = new THREE.SVGLoader.pointsToStroke(subPath.getPoints(), path.userData.style);
                 let wirePoints = arrayToPoints(strokeGeometry.attributes.position.array);
-                for (var p = 0; p < wirePoints.length; p += 3) {
-                  var newGeometry = new THREE.Shape([wirePoints[p], wirePoints[p + 1], wirePoints[p + 2]]);
+                for (let p = 0; p < wirePoints.length; p += 3) {
+                  const newGeometry = new THREE.Shape([wirePoints[p], wirePoints[p + 1], wirePoints[p + 2]]);
                   if (newGeometry) {
                     threeDGeometry = new THREE.ExtrudeBufferGeometry(newGeometry, extrudeSettings);
                     strokeMesh = new THREE.Mesh(threeDGeometry, strokeMaterial);
@@ -279,7 +263,6 @@ var loadSVG = function (svgUrl, extrude){
                 }
               }
             } 
-
             else {
               if (k < path.subPaths.length ){
                 strokeGeometry = new THREE.SVGLoader.pointsToStroke(subPath.getPoints(), path.userData.style);
@@ -291,24 +274,13 @@ var loadSVG = function (svgUrl, extrude){
             } 
           }
 
-          
           scene.add(group);
         }
-
       }
 
-      //add our base helper
-      //place cylinder and offsetting stroke material here
+      //place cylinder material here
       var baseMaterial = createBasicMaterial(0x00ffff, 0.3, true);
-      // var baseMaterial = new THREE.MeshBasicMaterial({
-      //   color: 0x00ffff,
-      //   opacity: 0.3,
-      //   transparent: true,
-      //   side: THREE.DoubleSide,
-      //   depthWrite: false,
-      //   wireframe: false
-      // });
-
+      //add our base helper with array of materials
       createStampBase(extrude, 'circle', group, [strokeMaterial, baseMaterial], svgUrl)
       // createStampBase(extrude, 'square', group, [strokeMaterial, baseMaterial], svgUrl)
     },
@@ -358,7 +330,14 @@ class Shape extends Component {
     // === THREE.JS EXAMPLE CODE END ===
   }
 
-  createGUI() {
+  createGUI = () => {
+    const update = () => {
+      clearThree(scene);
+      let myURL = 'public/' + model;
+      console.log(myURL);
+      loadSVG('public/sig.svg', guiData.extrude);
+    }
+
     if (gui) gui.destroy();
     gui = new GUI({ width: 150 });
     // var f1 = gui.addFolder('Flow Field');
@@ -366,13 +345,7 @@ class Shape extends Component {
     gui.add(guiData, 'extrude').name('Extrude?').onChange(update);
     // scene.add(gui);
     // gui.add(guiData, 'extrude').name('Extrude?').onChange(update);
-    // f1.open();
-    function update() {
-      clearThree(scene);
-      let myURL = 'public/' + model;
-      console.log(myURL);
-      loadSVG('public/sig.svg', guiData.extrude);
-  }
+    // f1.open();  
 }
 
   componentDidUpdate(){
@@ -399,11 +372,11 @@ class Shape extends Component {
               className='btn btn-block btn-success mb-2'
               onClick={e => {
                 e.preventDefault();
-                // alert('Feature not live yet! \n Check back in on Demo Night.')
-                exportBinary(group);
+                alert('Feature not live yet! \n Check back in on Demo Night.')
+                // exportBinary(group);
               }}
             >
-              Save As 3D Model
+              Save My Design
             </button>
             <div ref={ref => (this.mount = ref)} 
               

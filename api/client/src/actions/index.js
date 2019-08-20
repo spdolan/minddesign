@@ -2,6 +2,8 @@ import axios from "axios";
 export const SAVE_DRAWING = 'SAVE_DRAWING';
 export const SET_FILE = 'SET_FILE';
 export const RENDER_DRAWING = 'RENDER_DRAWING';
+export const USER_SIGNIN = 'USER_SIGNIN'
+export const USER_SIGNOUT = 'USER_SIGNOUT'
 
 const ROOT_URL = "http://localhost:8000/";
 

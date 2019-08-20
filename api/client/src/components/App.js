@@ -14,12 +14,18 @@ class App extends Component {
   render() {
     return (
       <div className='container main-app'>
-        <div className='jumbotron text-center'>
-          <h1>Working Title</h1>
-        </div>
+        <nav className="navbar navbar-light bg-light">
+          <a className="navbar-brand" href="/">MindDesign</a>
+          {/* <form class="form-inline">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search Designs" aria-label="Search" ></input>
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+          </form> */}
+          <button className="btn btn-danger my-2 my-sm-0" type="submit">Login <i className="fab fa-google"></i></button>
+
+        </nav>
         <div className='row mb-4'>
           <div className='col-md-12 text-center'>
-            <p> We'll probably put some user info here?</p>
+            <p> We'll probably put some user info here? <i className="fas fa-crown"></i></p>
           </div>
         </div>
         <div className='row'>
