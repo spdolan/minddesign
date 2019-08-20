@@ -22,18 +22,23 @@ class App extends Component {
           </form> */}
           <button 
             className="btn btn-danger my-2 my-sm-0" 
+
             onClick={e => {
               e.preventDefault();
-              
+              this.props.userLogin();
             }}
           >
             Login <i className="fab fa-google"></i>
           </button>
 
         </nav>
-        <div className='row mb-4'>
+        <div className='row mb-2'>
+          
           <div className='col-md-12 text-center'>
-            <p> We'll probably put some user info here? <i className="fas fa-crown"></i></p>
+            <div className='jumbotron mt-2'>
+              <h1>Hello, User</h1>
+              <p> We'll probably put some user info here? <i className="fas fa-crown"></i></p>
+            </div>
           </div>
         </div>
         <div className='row'>

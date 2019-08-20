@@ -193,8 +193,8 @@ const createBasicMaterial = (color, opacity, transparent) => {
     opacity: opacity,
     transparent: transparent,
     side: THREE.DoubleSide,
-    depthWrite: false,
-    wireFrame: false
+    depthWrite: false
+    // wireFrame: false
 
   });
 

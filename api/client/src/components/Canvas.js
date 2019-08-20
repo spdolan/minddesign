@@ -8,11 +8,11 @@ import SignatureCanvas from 'react-signature-canvas';
 class Canvas extends Component {
   constructor(props) {
     super(props);
-    this.cache = new CacheManager();
     this.state = { svgDataURL: null };
     this.sigPad = {};
   }
 
+  
 
   clear = () => {
     this.sigPad.clear()
@@ -45,7 +45,7 @@ class Canvas extends Component {
                 mindistance: 10,
                 throttle: 0,
                 // dotsize: 20,
-                className: 'sigCanvas mb-2'
+                className: 'sigPad my-10'
               }}
             />
           </div>

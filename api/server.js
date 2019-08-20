@@ -20,7 +20,13 @@ app.use(
   })
 )
 
+//CORS handlers here
 app.use(cors());
+// app.all('/*', function (req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   next();
+// });
+
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({
   extended: true
@@ -77,7 +83,7 @@ const googleAuth = passport.authenticate('google',
 app.get('/auth/google', googleAuth)
 
 app.get('/auth/google/callback', googleAuth, (req, res) => {
-  res.send('You are logged in via Google!')
+  res.redirect("http://localhost:3000");
 })
 
 app.get('/api/current_user', (req, res) => {
