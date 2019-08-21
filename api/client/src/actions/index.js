@@ -2,19 +2,49 @@ import axios from "axios";
 export const SAVE_DRAWING = 'SAVE_DRAWING';
 export const SET_FILE = 'SET_FILE';
 export const RENDER_DRAWING = 'RENDER_DRAWING';
-export const USER_SIGNIN = 'USER_SIGNIN'
-export const USER_SIGNOUT = 'USER_SIGNOUT'
+export const AUTH_USER = 'AUTH_USER'
+export const AUTH_ERROR = 'AUTH_ERROR'
 
 const ROOT_URL = "http://localhost:8000/";
 
-export const userLogin = () => dispatch => {
-  axios.get('/auth/google')
-    .then(function(response){
-      dispatch({ type: USER_SIGNIN, payload: response.user});
-    })
+export const signup = (formProps, callback) => dispatch => {
+  axios.post(
+    'auth/signup',
+    formProps
+  ).then(function (response) {
+    dispatch({ type: AUTH_USER, payload: response.data });
+    localStorage.setItem('token', response.data.token);
+    localStorage.setItem('email', response.data.email);
+    callback();
+  })
     .catch(function (error) {
-      console.log(error);
+      dispatch({ type: AUTH_ERROR, payload: 'Email in use' });
     });
+};
+
+export const signin = (formProps, callback) => dispatch => {
+  axios.post(
+    'auth/signin',
+    formProps
+  ).then(function (response) {
+    dispatch({ type: AUTH_USER, payload: response.data });
+    localStorage.setItem('token', response.data.token);
+    localStorage.setItem('email', response.data.email);
+    callback();
+  })
+    .catch(function (error) {
+      dispatch({ type: AUTH_ERROR, payload: 'Email in use' });
+    });
+};
+
+export const signout = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('email');
+
+  return {
+    type: AUTH_USER,
+    payload: ''
+  };
 };
 
 export const updateDrawing = (svgString) => dispatch => {

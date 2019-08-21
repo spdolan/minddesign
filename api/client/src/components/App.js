@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { userLogin } from '../actions';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import Navbar from './Navbar';
 import Canvas from './Canvas';
 import Shape from './Shape';
 
@@ -14,25 +15,10 @@ class App extends Component {
   render() {
     return (
       <div className='container main-app'>
-        <nav className="navbar navbar-light bg-light">
-          <a className="navbar-brand" href="/">MindDesign</a>
-          {/* <form class="form-inline">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search Designs" aria-label="Search" ></input>
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-          </form> */}
-          <a 
-            className="btn btn-danger my-2 my-sm-0" 
-
-            href="localhost:8000/auth/google"
-            target="_blank"
-          >
-            Login <i className="fab fa-google"></i>
-          </a>
-
-        </nav>
+        <Navbar />
         <div className='row mb-2'>
-          
           <div className='col-md-12 text-center'>
+            
             <div className='jumbotron mt-2'>
               <h1>Hello, User</h1>
               <p> We'll probably put some user info here? <i className="fas fa-crown"></i></p>
@@ -59,7 +45,7 @@ class App extends Component {
 
 function mapStateToProps(state) {
   return {
-    currentUser: state.currentUser
+    auth: state.auth
     // categories: state.categories
   };
 }

@@ -16,16 +16,10 @@ const requireGoogleAuth = passport.authenticate('google',
     failureRedirect: "/"
   })
 const requireSignin = passport.authenticate('local', { session: false })
+const keys = require('./config/keys');
 const app = express()
-
-mongoose.connect('mongodb://localhost/minddesign', { useNewUrlParser: true })
-
-app.use(
-  cookieSession({
-    maxAge: 30 * 24 * 60 * 60 * 1000,
-    keys: ['helloworld']
-  })
-)
+// DB Setup
+mongoose.connect(keys.MONGODB_URI);
 
 //CORS handlers here
 app.use(cors());
@@ -44,38 +38,8 @@ app.use(express.static('public'));
 // const mainRoutes = require('./routes/main');
 // app.use('/', mainRoutes);
 
-//setup for our Auth routes
-app.use(passport.initialize())
-app.use(passport.session())
-
-passport.serializeUser((user, done) => {
-  done(null, user._id)
-})
-
-passport.deserializeUser((id, done) => {
-  done(null, id)
-})
-
 app.post('/auth/signin', requireSignin, Authentication.signin)
 app.post('/auth/signup', Authentication.signup)
-
-app.get('/auth/google', googleAuth)
-
-app.get('/auth/google/callback', googleAuth, (req, res) => {
-
-  console.log(req.user);
-  res.redirect("http://localhost:3000");
-})
-
-app.get('/api/current_user', (req, res) => {
-  console.log(req.user)
-  res.send(req.user)
-})
-
-app.get('/api/logout', (req, res) => {
-  req.logout()
-  res.send(req.user)
-})
 
 app.get('/public/:file', (req, res) => {
   let file = req.params.file;
