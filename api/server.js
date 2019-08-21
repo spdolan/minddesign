@@ -5,13 +5,20 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const fs = require('fs');
 const passport = require('passport')
-const GoogleStrategy = require('passport-google-oauth20').Strategy
+const passportService = require('./services/passport')
 const cookieSession = require('cookie-session')
 const User = require('./schema/user')
-const nodeSlicer = require('node-slic3r')
+const Authentication = require('./controllers/authentication')
+const requireAuth = passport.authenticate('jwt', { session: false })
+const requireGoogleAuth = passport.authenticate('google',
+  {
+    scope: ['profile', 'email'],
+    failureRedirect: "/"
+  })
+const requireSignin = passport.authenticate('local', { session: false })
 const app = express()
 
-mongoose.connect('mongodb://localhost/stampage', { useNewUrlParser: true })
+mongoose.connect('mongodb://localhost/minddesign', { useNewUrlParser: true })
 
 app.use(
   cookieSession({
@@ -49,40 +56,14 @@ passport.deserializeUser((id, done) => {
   done(null, id)
 })
 
-passport.use(
-  new GoogleStrategy({
-    clientID: '577021367449-mh7jqghfspo7vu91kkc3surfce6e905n.apps.googleusercontent.com',
-    clientSecret: 'zjr0zpfiErOY4YjEEDDHg8Ud',
-    callbackURL: '/auth/google/callback'
-  },
-    (accessToken, refreshToken, profile, done) => {
-      User.findOne({ googleId: profile.id }).then(existingUser => {
-        if (existingUser) {
-          // we already have a record with the given profile ID
-          done(null, existingUser)
-        } else {
-          // we don't have a user record with this ID, make a new record!
-          new User({
-            googleId: profile.id,
-            name: profile.displayName,
-            email: profile.emails[0].value
-          })
-            .save()
-            .then(user => done(null, user))
-        }
-      })
-    }
-  )
-)
-
-const googleAuth = passport.authenticate('google',
-  {
-    scope: ['profile', 'email']
-  })
+app.post('/auth/signin', requireSignin, Authentication.signin)
+app.post('/auth/signup', Authentication.signup)
 
 app.get('/auth/google', googleAuth)
 
 app.get('/auth/google/callback', googleAuth, (req, res) => {
+
+  console.log(req.user);
   res.redirect("http://localhost:3000");
 })
 

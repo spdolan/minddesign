@@ -20,16 +20,14 @@ class App extends Component {
             <input class="form-control mr-sm-2" type="search" placeholder="Search Designs" aria-label="Search" ></input>
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
           </form> */}
-          <button 
+          <a 
             className="btn btn-danger my-2 my-sm-0" 
 
-            onClick={e => {
-              e.preventDefault();
-              this.props.userLogin();
-            }}
+            href="localhost:8000/auth/google"
+            target="_blank"
           >
             Login <i className="fab fa-google"></i>
-          </button>
+          </a>
 
         </nav>
         <div className='row mb-2'>
