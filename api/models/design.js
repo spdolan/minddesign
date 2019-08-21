@@ -1,14 +1,14 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const ModelSchema = new Schema({
-  modelName: { type: String},
-  modelOwner: {type: ObjectId },
+const DesignSchema = new Schema({
+  designName: { type: String},
+  designOwner: {type: ObjectId},
   svgLink: String,
   stlLink: String,
   gcodeLink: String,
-  modelSettings: [],
-  modelDescription: String,
+  designSettings: [],
+  designDescription: String,
   likes: 0,
   favorites: 0,
   published: false,
@@ -17,7 +17,7 @@ const ModelSchema = new Schema({
 });
 
 //updates our individual schema every time
-ModelSchema.pre('save', function (next) {
+DesignSchema.pre('save', function (next) {
   // get the current date
   const currentDate = new Date();
   // change the updated_at field to current date
@@ -30,6 +30,6 @@ ModelSchema.pre('save', function (next) {
 });
 
 //this will allow us to create an index for search
-// PackageSchema.index({ name: 'text', 'name': 'text' });
+// DesignSchema.index({ name: 'text', 'name': 'text' });
 
-module.exports = mongoose.model('Package', PackageSchema);
+module.exports = mongoose.model('design', DesignSchema);
