@@ -30,8 +30,14 @@ class Canvas extends Component {
 
   render() {
     return (
-      <div className='container text-center'>
+      <div className='container text-center justify-content-center'>
         <div className='row'>
+          <div className='col-12'>
+            <h3 className='text-center justify-content-center'>Start Sketching:</h3>
+          </div>
+        </div>
+        <div className='row'>
+          
           <div className='col-12'>
             <SignatureCanvas
               ref={(ref) => { this.sigPad = ref }}
@@ -45,28 +51,23 @@ class Canvas extends Component {
                 mindistance: 10,
                 throttle: 0,
                 // dotsize: 20,
-                className: 'sigPad my-10'
+                className: 'sigPad mt-4'
               }}
             />
           </div>
         </div>
-        <div className='row'>
-          <div className='col-12'>
-            
-              <button className='btn btn-secondary btn-lg mr-4' onClick={this.clear}>
-                Clear
-              </button>
-              <button className='btn btn-success btn-lg' onClick={this.renderDrawing}>
-                Render
-              </button>
-
-            {/* {this.state.svgDataURL ?
-              <img className='thumbnail' src={this.state.svgDataURL} />
-              : null} */}
-          </div>
+        {/* <div className='row'>
+          <div className='col-6'> */}
+            <button className='btn btn-secondary btn-lg mr-2' onClick={this.clear}>
+              Clear Pad
+            </button>
+          {/* </div>
+          <div className='col-6'> */}
+            <button className='btn btn-success btn-lg' onClick={this.renderDrawing}>
+              Draw To Canvas
+            </button>
+          
         </div>  
-      </div>
-      
     );
   }
 }

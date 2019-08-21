@@ -22,6 +22,7 @@ exports.currentUser = function(req, res) {
 }
 
 exports.signup = function(req, res, next) {
+  const name = req.body.name
   const email = req.body.email
   const password = req.body.password
 
@@ -41,6 +42,7 @@ exports.signup = function(req, res, next) {
     // If a user with email does NOT exist, create and save user record
     const user = new User()
 
+    user.name = name
     user.email = email
 
     user.setPassword(password)

@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import { userLogin } from '../actions';
+import {Switch, Route, Redirect } from 'react-router-dom';
+import {  } from '../actions';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import Navbar from './Navbar';
-import Canvas from './Canvas';
-import Shape from './Shape';
+import LandingPage from './LandingPage';
+import Signup from './Signup';
+import Signin from './Signin';
 
 class App extends Component {
   constructor(props){
@@ -14,31 +16,17 @@ class App extends Component {
   
   render() {
     return (
-      <div className='container main-app'>
+      <>
         <Navbar />
-        <div className='row mb-2'>
-          <div className='col-md-12 text-center'>
-            
-            <div className='jumbotron mt-2'>
-              <h1>Hello, User</h1>
-              <p> We'll probably put some user info here? <i className="fas fa-crown"></i></p>
-            </div>
-          </div>
+        <div className='container main-app mt-4'>
+          <Switch>
+            <Route exact path='/' component={LandingPage} />
+            <Route exact path='/signin' component={Signin} />
+            <Route exact path='/signup' component={Signup} />
+            <Redirect to='/signin' />
+          </Switch>
         </div>
-        <div className='row'>
-          <div className='col-12 col-md-6 mb-4'>
-            <Shape />
-          </div>
-          <div className='col-12 col-md-6 canvas text-center mb-5'>
-            <Canvas />
-          </div>
-        </div>
-        <div className='row'>
-          <div className='col-md-8 offset-md-1'>
-            
-          </div>
-        </div>
-      </div>
+      </>
     );
   }
 }
@@ -51,7 +39,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ userLogin }, dispatch);
+  return bindActionCreators({ }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, null)(App);

@@ -19,7 +19,7 @@ const requireSignin = passport.authenticate('local', { session: false })
 const keys = require('./config/keys');
 const app = express()
 // DB Setup
-mongoose.connect(keys.MONGODB_URI);
+mongoose.connect(keys.MONGODB_URI, { useNewUrlParser: true });
 
 //CORS handlers here
 app.use(cors());

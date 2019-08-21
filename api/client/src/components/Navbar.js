@@ -13,15 +13,22 @@ const Navbar = ({ authenticated, email, signout }) => {
     if (authenticated) {
       return (
         <>
-          <li>{email}</li>
-          <li><button onClick={handleSignOutClick}>Sign Out</button></li>
+          <li className='nav-item mr-3'>{email}</li>
+          <li className='nav-item'>
+            <button
+              onClick={handleSignOutClick}
+              className='btn btn-md btn-info'
+            >
+              Sign Out
+            </button>
+          </li>
         </>
       );
     } else {
       return (
         <>
-          <li><Link to="/signup" className='btn btn-sm btn-outline-primary'>Sign Up</Link></li>
-          <li><Link to="/signin" className='btn btn-sm btn-outline-success'>Sign In</Link></li>
+          <li className='nav-item mx-2'><Link to="/signup" className='btn btn-sm btn-primary'>Sign Up</Link></li>
+          <li className='nav-item mx-2'><Link to="/signin" className='btn btn-sm btn-success'>Sign In</Link></li>
         </>
       );
     }
@@ -30,16 +37,17 @@ const Navbar = ({ authenticated, email, signout }) => {
 
   return (
 
-    <nav className="navbar navbar-light bg-light">
-      <NavLink className="navbar-brand" href="/">MindDesign</NavLink>
+    <nav className="navbar fixed-top navbar-dark bg-dark align-middle text-align-middle">
+      <NavLink className="navbar-brand" to="/">MindDesign</NavLink>
       {/* <form class="form-inline">
             <input class="form-control mr-sm-2" type="search" placeholder="Search Designs" aria-label="Search" ></input>
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
           </form> */}
-      <ul class="navbar-nav mr-auto">
-        {renderLinks()}
-      </ul>
-
+      <div className="">
+        <ul className="navbar-nav mr-2">
+          {renderLinks()}
+        </ul>
+      </div>
     </nav>
   );
 };

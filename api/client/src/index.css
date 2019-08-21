@@ -1,6 +1,7 @@
 body {
   margin: 0;
   background-color: lightcyan;
+  background-image: url("./assets/voronoi-bg-v0.png");
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
@@ -15,4 +16,8 @@ code {
 
 .sigCanvas {
   display: inline-block;
+}
+
+.navbar-nav { 
+    flex-direction: row;
 }

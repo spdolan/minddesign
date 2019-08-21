@@ -7,7 +7,7 @@ import { GUI } from 'three/examples/js/libs/dat.gui.min.js';
 
 // === THREE.JS CODE START ===
 var scene = new THREE.Scene();
-scene.background = new THREE.Color(0xb0b0b0);
+scene.background = new THREE.Color(0xe0e0e0);
 
 var helper = new THREE.GridHelper(160, 10);
 helper.rotation.x = Math.PI / 2;
@@ -98,7 +98,6 @@ var exportASCII = function(meshGroup) {
   // let objectExtension = objectName + '.stl'
   saveString(result, 'thing.stl');
 }
-
 var exportBinary = function (meshGroup) {
   scaleGroup(meshGroup, 0.15);
   meshGroup.updateMatrixWorld(true);
@@ -306,14 +305,15 @@ class Shape extends Component {
       circle: true
     }
     this.createGUI = this.createGUI.bind(this);
+    this.saveSVG = this.saveSVG.bind(this);
   }
 
   componentDidMount() {
     // use ref as a mount point of the Three.js scene instead of the document.body
     this.mount.appendChild(renderer.domElement);
-    this.createGUI();
+    // this.createGUI();
 
-    this.mount.prepend(gui.domElement);
+    // this.mount.prepend(gui.domElement);
     // load a SVG resource
     loadSVG('public/tiger.svg', false);
     // this.props.renderDrawing({
@@ -363,26 +363,51 @@ class Shape extends Component {
    
   }
 
+  saveSVG = function () {
+    let publicUrl = 'http://localhost:8000/public/' + this.props.currentModel;
+    link.href = URL.createObjectURL(publicUrl);
+    link.download = 'myDesign.svg';
+    link.click();
+  } 
+
   render() {
     return (
       <div className='container text-center'>
         <div className='row'>
           <div className='col-12'>
-            <button
-              className='btn btn-block btn-success mb-2'
-              onClick={e => {
-                e.preventDefault();
-                alert('Feature not live yet! \n Check back in on Demo Night.')
-                // exportBinary(group);
-              }}
-            >
-              Save My Design
-            </button>
+            <div className='row'>
+              <div className='col-6'>
+                <button
+                  className='btn btn-block btn-primary mb-2'
+                  onClick={e => {
+                    e.preventDefault();
+                    alert('Feature not live yet! \n Check back in on Demo Night.')
+                    // this.saveSVG();
+                    // exportBinary(group);
+                  }}
+                >
+                  Download As SVG
+                </button>
+              </div>
+              <div className='col-6'>
+                <button
+                  className='btn btn-block btn-success mb-2'
+                  onClick={e => {
+                    e.preventDefault();
+                    alert('Feature not live yet! \n Check back in on Demo Night.')
+                    // exportBinary(group);
+                  }}
+                >
+                  Save My Design
+                </button>
+              </div>
+            </div>
+
             <div ref={ref => (this.mount = ref)} 
               
             />
             <button
-              className='btn btn-block btn-primary'
+              className='btn btn-block btn-secondary'
               onClick={e => clearThree(scene)}
             >
               Clear Canvas

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Switch, Route, Redirect  } from 'react-router-dom';
 import { render } from "react-dom";
 import { Provider } from "react-redux";
 import { createStore, applyMiddleware } from "redux";
@@ -7,8 +7,8 @@ import thunk from "redux-thunk";
 import rootReducer from "./reducers/index";
 
 import App from './components/App';
-import Signup from './components/Signup';
 import Signin from './components/Signin';
+import Signup from './components/Signup';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'font-awesome/css/font-awesome.css';
@@ -18,14 +18,13 @@ const store = createStore(rootReducer, {}, applyMiddleware(thunk));
 
 render(
   <Provider store={store}>
-    <Router>
+    < BrowserRouter>
       <Switch>
-        <Route exact path="/" component={App} />
-        <Route exact path="/signup" component={Signup} />
-        <Route exact path="/signin" component={Signin} />
+        <Route path="/" component={App} />
         
+        {/* <Redirect to='/' /> */}
       </Switch>
-    </Router>
+    </ BrowserRouter>
   </Provider>,
   document.getElementById("root")
 );
