@@ -137,12 +137,7 @@ const setInitialScale = (extrudeBoolean, svgUrl) => {
 
   //select between true/false for extrude and check for remote sig file (v1 of app)
   //v2 of app will take in remote url and not be concerned with naming
-  if (extrudeBoolean) {
-    scalarSettings = 0.6;
-    group.position.x = -85;
-    group.position.y = 85;
-
-  } else if (!extrudeBoolean && svgUrl.includes('sig')) {
+  if (!svgUrl.includes('tiger')) {
     scalarSettings = 0.6;
     group.position.x = -85;
     group.position.y = 85;
@@ -349,7 +344,7 @@ class Shape extends Component {
 }
 
   componentDidUpdate(){
-    // console.log(this.props.currentModel);
+    console.log(this.props.currentModel);
     let publicUrl = 'public/' + this.props.currentModel;
     clearThree(scene);
     loadSVG(publicUrl, guiData.extrude);
@@ -364,8 +359,8 @@ class Shape extends Component {
   }
 
   saveSVG = function () {
-    let publicUrl = 'http://localhost:8000/public/' + this.props.currentModel;
-    link.href = URL.createObjectURL(publicUrl);
+    let publicUrl = 'http://localhost:8000/download/' + this.props.currentModel;
+    link.href = publicUrl;
     link.download = 'myDesign.svg';
     link.click();
   } 
@@ -381,8 +376,8 @@ class Shape extends Component {
                   className='btn btn-block btn-primary mb-2'
                   onClick={e => {
                     e.preventDefault();
-                    alert('Feature not live yet! \n Check back in on Demo Night.')
-                    // this.saveSVG();
+                    // alert('Feature not live yet! \n Check back in on Demo Night.');
+                    this.saveSVG();
                     // exportBinary(group);
                   }}
                 >

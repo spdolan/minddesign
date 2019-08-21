@@ -18,6 +18,10 @@ code {
   display: inline-block;
 }
 
+.main-app {
+  margin-top: 8vh;
+}
+
 .navbar-nav { 
     flex-direction: row;
 }

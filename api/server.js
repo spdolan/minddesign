@@ -47,6 +47,12 @@ app.get('/public/:file', (req, res) => {
   res.sendFile(path);
 });
 
+app.get('/download/:file', function (req, res) {
+  let file = req.params.file;
+  let path = `${__dirname}/public/${file}`;
+  res.download(path); // Set disposition and send it.
+});
+
 app.post('/public/:file', (req, res) => {
   let file = req.params.file;
   let path = __dirname + '/public/' + file;
@@ -54,8 +60,8 @@ app.post('/public/:file', (req, res) => {
   let svgStyled = req.body.data.replace(regex, ' style="stroke-width:10;"></path >');
   fs.writeFile(path, svgStyled, (err) => {
     if (err) throw err;
-    console.log('The file has been saved!');
-    res.send('yep, data passed upward.');
+    console.log(`File ${file} has been saved!`);
+    res.send({file});
   });
 })
 

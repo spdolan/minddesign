@@ -47,9 +47,9 @@ export const signout = () => {
   };
 };
 
-export const updateDrawing = (svgString) => dispatch => {
+export const updateDrawing = (fileName, svgString) => dispatch => {
   // console.log(svgString);
-  axios.post(`public/sig.svg`,{
+  axios.post(`public/${fileName}`,{
     data: svgString
   }).then(function (response) {
     // console.log(response);

@@ -1,6 +1,4 @@
-import CacheManager from '../cache'
 import { SAVE_DRAWING } from "../actions";
-const cache = new CacheManager();
 
 export default function (state = {}, action) {
   switch (action.type) {

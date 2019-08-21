@@ -2,29 +2,51 @@ import React, { Component } from 'react';
 import { updateDrawing, setFile } from '../actions';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import CacheManager from '../cache';
 import SignatureCanvas from 'react-signature-canvas';
 
 class Canvas extends Component {
   constructor(props) {
     super(props);
-    this.state = { svgDataURL: null };
+    this.state = { svgDataURL: null, fileNumber: null };
     this.sigPad = {};
+    this.createRandomNumber = this.createRandomNumber.bind(this);
+    this.createFileName = this.createFileName.bind(this);
+  }
+
+  createRandomNumber = () => { return Math.floor(Math.random() * 10000000) }
+
+  createFileName = () => {
+    let currentFile;
+    if (this.props.auth.authenticated) {
+      currentFile = `${this.props.auth.email}-${this.createRandomNumber()}.svg`;
+    } else {
+      currentFile = `guest-${this.createRandomNumber()}.svg`
+    }
+
+    return currentFile;
+  }
+
+  componentDidMount(){
+
+    this.setState({fileName: this.createFileName()})
   }
 
   
 
   clear = () => {
-    this.sigPad.clear()
+    this.setState({ fileName: this.createFileName()}, () => {
+      this.sigPad.clear();
+    })
   }
 
   renderDrawing = () => {
+        
     this.setState({
       svgDataURL: this.sigPad.toDataURL('image/svg+xml')
     }, () => {
         let mySVG = this.state.svgDataURL.split(',');
-        this.props.updateDrawing(atob(mySVG[1]));
-        this.props.setFile('sig');
+        this.props.updateDrawing(this.state.fileName, atob(mySVG[1]));
+        // this.props.setFile(this.state.fileName);
     })
   }
 
@@ -74,7 +96,7 @@ class Canvas extends Component {
 
 function mapStateToProps(state) {
   return {
-    // products: state.products,
+    auth: state.auth,
     timeStamp: state.timeStamp
   };
 }

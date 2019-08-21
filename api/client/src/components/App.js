@@ -18,7 +18,7 @@ class App extends Component {
     return (
       <>
         <Navbar />
-        <div className='container main-app mt-4'>
+        <div className='container main-app'>
           <Switch>
             <Route exact path='/' component={LandingPage} />
             <Route exact path='/signin' component={Signin} />

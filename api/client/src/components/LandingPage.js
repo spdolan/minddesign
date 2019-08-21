@@ -6,7 +6,7 @@ import Canvas from './Canvas';
 const LandingPage = () => {
   return (
     <>
-      <div className='row mb-2'>
+      <div className='row'>
         <div className='col-md-12 text-center'>
 
           <div className='jumbotron mt-2'>
