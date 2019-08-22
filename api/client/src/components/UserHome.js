@@ -15,23 +15,45 @@ class UserHome extends Component {
   }
 
   renderDesigns(designArray){
+    
     return(designArray.map(design => {
-      return <DesignCard design={design} />
+      return <DesignCard design={design} key={design._id}/>
     }))
   }
 
   render() {
-    return (
-      
-      <div className='row'>
-        <div className='col-12'>
-          <div className='card-group'>
 
+    if (!this.props.designs) {
+      return (
+        <div className='row'>
+          <div className='col-12'>
+            <h1>Nothing to see here yet... hold please...</h1>
           </div>
         </div>
-      </div>
-      
-    )
+      );
+    } else if (this.props.designs.length === 0) {
+      return (
+        <div className='row'>
+          <div className='col-12'>
+            <h4>Hey! Looks like you don't have any design just yet...</h4>
+          </div>
+        </div>
+      );
+    } else
+
+      return (
+        <div className='row'>
+          <div className='col-12'>
+            <div className='card-group'>
+              <div className="card-columns mb-4">
+                {this.renderDesigns(this.props.designs)}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      );
+
   }
 }
 
