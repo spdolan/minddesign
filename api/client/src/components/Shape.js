@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { renderDrawing, setFile } from '../actions';
+import { renderDrawing, getFile } from '../actions';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import THREE from "../three";
@@ -161,7 +161,7 @@ const createStampBase = (extrude, shape, group, materialArray, svgUrl) => {
   let groupCenterX = boxShape.geometry.boundingSphere.center.x;
   let groupCenterY = boxShape.geometry.boundingSphere.center.y;
   
-  if(extrude && svgUrl.includes('sig')){
+  if(extrude && !svgUrl.includes('tiger')){
     var baseShape;
     if (shape === 'circle') {
       var baseRadius = (1 / group.scale.x) * boxShape.geometry.boundingSphere.radius;
@@ -297,18 +297,20 @@ class Shape extends Component {
   constructor(props){
     super(props);
     this.state = {
-      circle: true
+      circle: true,
+      extrude: false
     }
     this.createGUI = this.createGUI.bind(this);
     this.saveSVG = this.saveSVG.bind(this);
+    this.renderDownloadButton = this.renderDownloadButton.bind(this)
   }
 
   componentDidMount() {
     // use ref as a mount point of the Three.js scene instead of the document.body
     this.mount.appendChild(renderer.domElement);
-    // this.createGUI();
-
-    // this.mount.prepend(gui.domElement);
+    clearThree(scene);
+    this.createGUI();
+    this.mount.prepend(gui.domElement);
     // load a SVG resource
     loadSVG('public/tiger.svg', false);
     // this.props.renderDrawing({
@@ -328,15 +330,18 @@ class Shape extends Component {
   createGUI = () => {
     const update = () => {
       clearThree(scene);
-      let myURL = 'public/' + model;
-      console.log(myURL);
-      loadSVG('public/sig.svg', guiData.extrude);
+      let myURL = 'public/' + this.props.currentModel;
+      // console.log(myURL);
+      this.setState({extrude: !this.state.extrude}, () => {
+        loadSVG(myURL, this.state.extrude);
+      })
+      
     }
 
     if (gui) gui.destroy();
     gui = new GUI({ width: 150 });
     // var f1 = gui.addFolder('Flow Field');
-    const model = this.props.currentModel;
+    // const model = this.props.currentModel;
     gui.add(guiData, 'extrude').name('Extrude?').onChange(update);
     // scene.add(gui);
     // gui.add(guiData, 'extrude').name('Extrude?').onChange(update);
@@ -344,10 +349,10 @@ class Shape extends Component {
 }
 
   componentDidUpdate(){
-    console.log(this.props.currentModel);
+    // console.log(this.props.currentModel);
     let publicUrl = 'public/' + this.props.currentModel;
     clearThree(scene);
-    loadSVG(publicUrl, guiData.extrude);
+    loadSVG(publicUrl, this.state.extrude);
     // this.props.renderDrawing({
     //   fileString: 'sig',
     //   extrude: 'extrude'
@@ -358,8 +363,36 @@ class Shape extends Component {
    
   }
 
+  renderDownloadButton(extrudeBoolean){
+    return extrudeBoolean ?
+      <button
+        className='btn btn-block btn-primary mb-2'
+        onClick={e => {
+          e.preventDefault();
+          // alert('Feature not live yet! \n Check back in on Demo Night.');
+          // this.saveSVG();
+          exportBinary(group);
+        }}
+      >
+        Download As STL
+                </button>
+      :
+      <button
+        className='btn btn-block btn-primary mb-2'
+        onClick={e => {
+          e.preventDefault();
+          // alert('Feature not live yet! \n Check back in on Demo Night.');
+          console.log(__dirname);
+          // this.props.getFile(this.props.currentModel);
+          this.saveSVG();
+        }}
+      >
+        Download As SVG
+                </button>
+  }
+
   saveSVG = function () {
-    let publicUrl = 'http://localhost:8000/download/' + this.props.currentModel;
+    let publicUrl = 'download/' + this.props.currentModel;
     link.href = publicUrl;
     link.download = 'myDesign.svg';
     link.click();
@@ -372,17 +405,7 @@ class Shape extends Component {
           <div className='col-12'>
             <div className='row'>
               <div className='col-6'>
-                <button
-                  className='btn btn-block btn-primary mb-2'
-                  onClick={e => {
-                    e.preventDefault();
-                    // alert('Feature not live yet! \n Check back in on Demo Night.');
-                    this.saveSVG();
-                    // exportBinary(group);
-                  }}
-                >
-                  Download As SVG
-                </button>
+                {this.renderDownloadButton(this.state.extrude)}
               </div>
               <div className='col-6'>
                 <button
@@ -422,7 +445,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ renderDrawing }, dispatch);
+  return bindActionCreators({ renderDrawing, getFile }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Shape);

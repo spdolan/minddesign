@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { updateDrawing, setFile } from '../actions';
+import { updateDrawing, getFile } from '../actions';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import SignatureCanvas from 'react-signature-canvas';
@@ -102,7 +102,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ updateDrawing, setFile }, dispatch);
+  return bindActionCreators({ updateDrawing, getFile }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Canvas);

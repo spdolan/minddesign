@@ -17,6 +17,8 @@ const requireGoogleAuth = passport.authenticate('google',
   })
 const requireSignin = passport.authenticate('local', { session: false })
 const keys = require('./config/keys');
+const uploadService = require('./services/file-upload')
+const singleUpload = uploadService.single('svg');
 const app = express()
 // DB Setup
 mongoose.connect(keys.MONGODB_URI, { useNewUrlParser: true });
@@ -50,7 +52,8 @@ app.get('/public/:file', (req, res) => {
 app.get('/download/:file', function (req, res) {
   let file = req.params.file;
   let path = `${__dirname}/public/${file}`;
-  res.download(path); // Set disposition and send it.
+  // res.download(path);
+  res.send({file: path})
 });
 
 app.post('/public/:file', (req, res) => {
@@ -58,11 +61,21 @@ app.post('/public/:file', (req, res) => {
   let path = __dirname + '/public/' + file;
   var regex = /><\/path>/g;
   let svgStyled = req.body.data.replace(regex, ' style="stroke-width:10;"></path >');
-  fs.writeFile(path, svgStyled, (err) => {
+  let svgEmbiggen = svgStyled.replace('viewBox="0 0 200 200" width="200" height="200"', 'viewBox="0 0 800 800" width="800" height="800"')
+  fs.writeFile(path, svgEmbiggen, (err) => {
     if (err) throw err;
     console.log(`File ${file} has been saved!`);
     res.send({file});
+    
   });
+  
+  // singleUpload(req, res, function (err) {
+  //   if (err) {
+  //     return res.status(422).send({ errors: [{ title: 'Image Upload Error', detail: err.message }] });
+  //   }
+
+  //   return res.send({ 'svgUrl': req.file.location });
+  // });
 })
 
 

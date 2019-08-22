@@ -1,4 +1,4 @@
-import { SAVE_DRAWING } from "../actions";
+import { SAVE_DRAWING, GET_FILE } from "../actions";
 
 export default function (state = {}, action) {
   switch (action.type) {
@@ -10,6 +10,9 @@ export default function (state = {}, action) {
       // cache.writeData('state', newState)
       let newState = {timeStamp: new Date()}
       return newState
+    case GET_FILE:
+      let someState = { timeStamp: new Date() }
+      return someState
   default:
     return state;
   }

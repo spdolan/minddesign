@@ -1,6 +1,6 @@
 import axios from "axios";
 export const SAVE_DRAWING = 'SAVE_DRAWING';
-export const SET_FILE = 'SET_FILE';
+export const GET_FILE = 'GET_FILE';
 export const RENDER_DRAWING = 'RENDER_DRAWING';
 export const AUTH_USER = 'AUTH_USER'
 export const AUTH_ERROR = 'AUTH_ERROR'
@@ -60,15 +60,16 @@ export const updateDrawing = (fileName, svgString) => dispatch => {
     });
 };
 
-export const setFile = (fileName) => dispatch => {
-  let myFile = '';
-  if(fileName !== 'tiger' && fileName !== 'sig'){
-    myFile = 'tiger.svg'
-  } else {
-    myFile = fileName + '.svg'
-  }
-
-  dispatch({ type: SET_FILE, payload: myFile })
+export const getFile = (fileName) => dispatch => {
+  axios.get(`download/${fileName}`)
+    .then(function(response){
+      console.log(response);
+      window.open(response.file);
+      dispatch({ type: GET_FILE, payload: response })
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
 }
 
 export const renderDrawing = (queryObject) => dispatch => {
