@@ -7,11 +7,11 @@ import Navbar from './Navbar';
 import LandingPage from './LandingPage';
 import Signup from './Signup';
 import Signin from './Signin';
+import UserHome from './UserHome';
 
 class App extends Component {
   constructor(props){
     super(props);
-
   }
   
   render() {
@@ -23,7 +23,8 @@ class App extends Component {
             <Route exact path='/' component={LandingPage} />
             <Route exact path='/signin' component={Signin} />
             <Route exact path='/signup' component={Signup} />
-            <Redirect to='/signin' />
+            <Route exact path='/user/home' component={UserHome} />
+            <Redirect to='/' />
           </Switch>
         </div>
       </>

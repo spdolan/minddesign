@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { renderDrawing, getFile } from '../actions';
+import { renderDrawing, getFile, saveDesign } from '../actions';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import THREE from "../three";
@@ -132,7 +132,7 @@ const arrayToPoints = function(array){
 
 var gui;
 
-const setInitialScale = (extrudeBoolean, svgUrl) => {
+const setInitialScale = (svgUrl) => {
   var scalarSettings;
 
   //select between true/false for extrude and check for remote sig file (v1 of app)
@@ -215,7 +215,7 @@ var loadSVG = function (svgUrl, extrude){
         bevelSegments: 1
       };
 
-      setInitialScale(extrude, svgUrl);
+      setInitialScale(svgUrl);
 
       for (let i = 0; i < paths.length; i++) {
         //let's add our printing base here!
@@ -313,29 +313,17 @@ class Shape extends Component {
     this.mount.prepend(gui.domElement);
     // load a SVG resource
     loadSVG('public/tiger.svg', false);
-    // this.props.renderDrawing({
-    //   fileString:'tiger', 
-    //   extrude: 'flat'
-    // });
-    // scene.add(this.props.currentMesh);
-
     window.addEventListener('resize', onWindowResize, false);
-    
     animate();
-
-    
-    // === THREE.JS EXAMPLE CODE END ===
   }
 
   createGUI = () => {
     const update = () => {
       clearThree(scene);
       let myURL = 'public/' + this.props.currentModel;
-      // console.log(myURL);
       this.setState({extrude: !this.state.extrude}, () => {
         loadSVG(myURL, this.state.extrude);
       })
-      
     }
 
     if (gui) gui.destroy();
@@ -343,24 +331,13 @@ class Shape extends Component {
     // var f1 = gui.addFolder('Flow Field');
     // const model = this.props.currentModel;
     gui.add(guiData, 'extrude').name('Extrude?').onChange(update);
-    // scene.add(gui);
-    // gui.add(guiData, 'extrude').name('Extrude?').onChange(update);
-    // f1.open();  
 }
 
   componentDidUpdate(){
-    // console.log(this.props.currentModel);
     let publicUrl = 'public/' + this.props.currentModel;
     clearThree(scene);
-    loadSVG(publicUrl, this.state.extrude);
-    // this.props.renderDrawing({
-    //   fileString: 'sig',
-    //   extrude: 'extrude'
-    // });
-    // scene.add(this.props.currentMesh);
-    
+    loadSVG(publicUrl, this.state.extrude);   
     animate();
-   
   }
 
   renderDownloadButton(extrudeBoolean){
@@ -370,25 +347,30 @@ class Shape extends Component {
         onClick={e => {
           e.preventDefault();
           // alert('Feature not live yet! \n Check back in on Demo Night.');
-          // this.saveSVG();
           exportBinary(group);
         }}
       >
-        Download As STL
+        Download As 3D Mini-Stamp
                 </button>
       :
       <button
         className='btn btn-block btn-primary mb-2'
         onClick={e => {
           e.preventDefault();
-          // alert('Feature not live yet! \n Check back in on Demo Night.');
-          console.log(__dirname);
-          // this.props.getFile(this.props.currentModel);
           this.saveSVG();
         }}
       >
-        Download As SVG
+        Download As Picture
                 </button>
+  }
+
+  handleSaveDesign(isLoggedInBoolean){
+    if(isLoggedInBoolean){
+      this.props.saveDesign(this.props.currentModel, this.auth.email)
+    } else {
+      // alert('Feature not live yet! \n Check back in on Demo Night.')
+      alert('You\'ll to need to be Signed In to save!  \n Please use the links in the navigation above.')
+    }
   }
 
   saveSVG = function () {
@@ -398,7 +380,7 @@ class Shape extends Component {
     } else {
       publicUrl = 'https://ancient-plains-77128.herokuapp.com/download/' + this.props.currentModel;
     }
-    
+
     link.href = publicUrl;
     link.download = 'myDesign.svg';
     link.click();
@@ -426,7 +408,7 @@ class Shape extends Component {
                 </button>
               </div>
             </div>
-
+          
             <div ref={ref => (this.mount = ref)} 
               
             />
@@ -446,12 +428,13 @@ class Shape extends Component {
 function mapStateToProps(state) {
   return {
     currentModel: state.currentModel,
-    timeStamp: state.timeStamp
+    timeStamp: state.timeStamp,
+    auth: state.auth
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ renderDrawing, getFile }, dispatch);
+  return bindActionCreators({ renderDrawing, getFile, saveDesign }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Shape);

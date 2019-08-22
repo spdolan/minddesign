@@ -3,7 +3,7 @@ import { NavLink, Link } from "react-router-dom";
 import { connect } from 'react-redux';
 import * as actions from '../actions';
 
-const Navbar = ({ authenticated, email, signout }) => {
+const Navbar = ({ authenticated, email, name, signout }) => {
   
   const handleSignOutClick = () => {
     signout();
@@ -13,7 +13,7 @@ const Navbar = ({ authenticated, email, signout }) => {
     if (authenticated) {
       return (
         <>
-          <li className='nav-item mr-3'>{email}</li>
+          <li className='nav-item mr-3'><Link to="/user/home" className='btn btn-md btn-secondary'>{name}</Link></li>
           <li className='nav-item'>
             <button
               onClick={handleSignOutClick}
@@ -55,7 +55,8 @@ const Navbar = ({ authenticated, email, signout }) => {
 function mapStateToProps(state) {
   return {
     authenticated: state.auth.authenticated,
-    email: state.auth.email
+    email: state.auth.email,
+    name: state.auth.name
   };
 }
 

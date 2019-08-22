@@ -13,7 +13,8 @@ exports.signin = function(req, res, next) {
   // We just need to give them a token
   res.send({
     token: tokenForUser(req.user),
-    email: req.user.email
+    email: req.user.email,
+    name: req.user.name
   })
 }
 
@@ -44,14 +45,14 @@ exports.signup = function(req, res, next) {
 
     user.name = name
     user.email = email
-
+    
     user.setPassword(password)
 
     user.save(function(err, user) {
       if (err) { return next(err) }
 
       // Repond to request indicating the user was created
-      res.json({ token: tokenForUser(user), email: user.email })
+      res.json({ token: tokenForUser(user), email: user.email, name: user.name })
     });
   });
 }

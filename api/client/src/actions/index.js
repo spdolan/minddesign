@@ -2,8 +2,11 @@ import axios from "axios";
 export const SAVE_DRAWING = 'SAVE_DRAWING';
 export const GET_FILE = 'GET_FILE';
 export const RENDER_DRAWING = 'RENDER_DRAWING';
-export const AUTH_USER = 'AUTH_USER'
-export const AUTH_ERROR = 'AUTH_ERROR'
+export const AUTH_USER = 'AUTH_USER';
+export const AUTH_ERROR = 'AUTH_ERROR';
+export const SAVE_DESIGN = 'SAVE_DESIGN';
+export const GET_DESIGN = 'GET_DESIGN';
+export const GET_DESIGNS = 'GET_DESIGNS';
 
 const ROOT_URL = "http://localhost:8000/";
 
@@ -49,8 +52,9 @@ export const signout = () => {
 
 export const updateDrawing = (fileName, svgString) => dispatch => {
   // console.log(svgString);
+  
   axios.post(`public/${fileName}`,{
-    data: svgString
+    data: svgString,
   }).then(function (response) {
     // console.log(response);
     dispatch({ type: SAVE_DRAWING, payload: response.data });
@@ -63,8 +67,7 @@ export const updateDrawing = (fileName, svgString) => dispatch => {
 export const getFile = (fileName) => dispatch => {
   axios.get(`download/${fileName}`)
     .then(function(response){
-      console.log(response);
-      window.open(response.file);
+      
       dispatch({ type: GET_FILE, payload: response })
     })
     .catch(function (error) {
@@ -72,9 +75,49 @@ export const getFile = (fileName) => dispatch => {
     });
 }
 
+export const getUserDesigns = (userName) => dispatch => {
+  // console.log(svgString);
+
+  axios.get(`user/${userName}/designs`)
+  .then(function (response) {
+    // console.log(response);
+    dispatch({ type: GET_DESIGNS, payload: response.data });
+  })
+    .catch(function (error) {
+      console.log(error);
+    });
+};
+
+export const getUserDesign = (userName,designName) => dispatch => {
+  // console.log(svgString);
+
+  axios.get(`user/${userName}/designs/${designName}`)
+    .then(function (response) {
+      // console.log(response);
+      dispatch({ type: GET_DESIGN, payload: response.data });
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+};
+
+export const saveDesign = (userName, designName) => dispatch => {
+  // console.log(svgString);
+
+  axios.get(`user/${userName}/designs/${designName}/save`)
+  .then(function (response) {
+    // console.log(response);
+    dispatch({ type: SAVE_DESIGN, payload: response.data });
+  })
+    .catch(function (error) {
+      console.log(error);
+    });
+};
+
 export const renderDrawing = (queryObject) => dispatch => {
   let queryUrl = `${ROOT_URL}?`;
   let queryString = ``;
+  let userName = localStorage.getItem('email')
   const { fileString, extrude } = queryObject;
 
   if (fileString) {
