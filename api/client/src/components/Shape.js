@@ -392,7 +392,13 @@ class Shape extends Component {
   }
 
   saveSVG = function () {
-    let publicUrl = 'download/' + this.props.currentModel;
+    let publicUrl;
+    if(window.location.host.includes('3000')){
+      publicUrl = 'http://localhost:8000/download/' + this.props.currentModel;
+    } else {
+      publicUrl = 'https://ancient-plains-77128.herokuapp.com/download/' + this.props.currentModel;
+    }
+    
     link.href = publicUrl;
     link.download = 'myDesign.svg';
     link.click();

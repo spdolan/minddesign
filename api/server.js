@@ -52,8 +52,8 @@ app.get('/public/:file', (req, res) => {
 app.get('/download/:file', function (req, res) {
   let file = req.params.file;
   let path = `${__dirname}/public/${file}`;
-  // res.download(path);
-  res.send({file: path})
+  res.download(path);
+  // res.send({file: path});
 });
 
 app.post('/public/:file', (req, res) => {
