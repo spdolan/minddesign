@@ -18,10 +18,10 @@
   * run 'npm start' within the /api/client folder, to start the React app (default to localhost:3000).
   * run 'node server.js' within the /api folder, or use basic launch configuration within something like VS Code.
 </details>
-<details>
+<details><summary>Once You're Running</summary> 
   
-  <summary>Once You're Running</summary> 
 * Navigate to localhost:3000, and start drawing!
 * As of the latest release, the tiger.svg won't directly download. We're working on that, and agree that it is awesome.
 * You will be able to sign in, and must do so in order to save your designs on the site - but you can download them for free!
+
 </details>
