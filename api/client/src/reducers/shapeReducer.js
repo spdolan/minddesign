@@ -1,8 +1,8 @@
-import { SAVE_DRAWING } from "../actions";
+import { SAVE_DESIGN } from "../actions";
 
 export default function (state = 'tiger.svg', action) {
   switch (action.type) {
-    case SAVE_DRAWING:
+    case SAVE_DESIGN:
       // let newState = {
       //   ...state,
       //   filters: [...state.filters, action.filter]
@@ -10,7 +10,7 @@ export default function (state = 'tiger.svg', action) {
       // cache.writeData('state', newState)
       // console.log(action)
       
-      return action.payload.file
+      return action.payload.fileName
   default:
     return state;
   }

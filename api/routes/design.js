@@ -1,17 +1,17 @@
 const router = require('express').Router();
+const fs = require('fs');
 const passport = require('passport')
 const Authentication = require('../controllers/authentication')
 const requireSignin = passport.authenticate('local', { session: false })
 const User = require('../models/user')
 const Design = require('../models/design')
-const upload = require('../services/upload-file');
 
 router.param('userName', function (req, res, next) {
   let { userName } = req.params;
   User.findOne({ name: userName }).exec((err, result) => {
     if (err) return next(err);
-    if (result === undefined || result === []) {
-      req.user = {userName: 'guest'};
+    if (result === undefined) {
+      res.status(404).send('User not found, please check User Name.');
     } else {
       req.user = result;
       next();
@@ -20,8 +20,8 @@ router.param('userName', function (req, res, next) {
 });
 
 // POST to create new file
-router.post('/:userName/designs/:fileName', (req, res) => {
-  let {fileName} = req.params
+router.post('/:userName/:fileName', (req, res) => {
+  let { fileName } = req.params
   // console.log(path);
   var regex = /><\/path>/g;
   let svgStyled = req.body.data.replace(regex, ' style="stroke-width:10;"></path >');
@@ -38,20 +38,21 @@ router.post('/:userName/designs/:fileName', (req, res) => {
 
   s3.upload(params, function (s3Err, data) {
     if (s3Err) throw s3Err
-    res.send({ file });
+    res.send({ fileName });
   });
 });
 
 // GET to display file
-router.get('/:userName/designs/:fileName', (req, res) => {
+router.get('/:userName/:fileName', (req, res) => {
   let { fileName } = req.params
   let path = `https://minddesign-assets.s3.amazonaws.com/${userName}/designs/${fileName}`;
   res.sendFile(path);
 });
 
-router.get(`/:userName/designs/:designName/save`, (req, res) => {
-  let fileName = req.params.designName;
-  let path = 'https://minddesign-assets.s3.amazonaws.com/' + fileName + '.svg';
+//GET to originally save a user design
+router.get(`/:userName/:fileName/save`, (req, res) => {
+  let { fileName } = req.params
+  let path = `https://minddesign-assets.s3.amazonaws.com/${userName}/designs/${fileName}`;
 
   //we'll have a check for the file existing here
 
@@ -72,3 +73,22 @@ router.get(`/:userName/designs/:designName/save`, (req, res) => {
     res.send([design])
   });
 })
+
+//PUT to update a user design
+router.put(`/:userName/:designName/edit`, (req, res) => {
+  let { designName } = req.params
+
+  //we'll have a check for the file existing here
+  Design.findOneAndUpdate({ designOwner: req.user._id, designName: designName }, req.body).exec((err, result) => {
+    if (err) return next(err);
+    if (result === undefined) {
+      res.status(404).send('Design not found, please check name or login.');
+    } else {
+      res.send([result])
+    }
+  })
+
+
+})
+
+module.exports = router;

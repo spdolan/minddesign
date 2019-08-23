@@ -1,8 +1,8 @@
-import { SAVE_DRAWING, GET_FILE } from "../actions";
+import { SAVE_DESIGN, GET_FILE } from "../actions";
 
 export default function (state = {}, action) {
   switch (action.type) {
-    case SAVE_DRAWING:
+    case SAVE_DESIGN:
       // let newState = {
       //   ...state,
       //   filters: [...state.filters, action.filter]

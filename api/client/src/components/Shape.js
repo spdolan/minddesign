@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { renderDrawing, getFile, saveDesign } from '../actions';
+import { renderDrawing, downloadFile, saveDesign } from '../actions';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import THREE from "../three";
@@ -321,9 +321,10 @@ class Shape extends Component {
   createGUI = () => {
     const update = () => {
       clearThree(scene);
-      let myURL = 'https://minddesign-assets.s3.amazonaws.com/' + this.props.currentModel;
+      let currentUserName = this.props.auth.name === '' ? 'guest' : this.props.auth.name;
+      let myUrl = `https://minddesign-assets.s3.amazonaws.com/${currentUserName}/designs/${this.props.currentModel}`;
       this.setState({extrude: !this.state.extrude}, () => {
-        loadSVG(myURL, this.state.extrude);
+        loadSVG(myUrl, this.state.extrude);
       })
     }
 
@@ -335,7 +336,8 @@ class Shape extends Component {
 }
 
   componentDidUpdate(){
-    let publicUrl = 'https://minddesign-assets.s3.amazonaws.com/' + this.props.currentModel;
+    let currentUserName = this.props.auth.name === '' ? 'guest' : this.props.auth.name;
+    let publicUrl = `https://minddesign-assets.s3.amazonaws.com/${currentUserName}/designs/${this.props.currentModel}`;
     clearThree(scene);
     loadSVG(publicUrl, this.state.extrude);   
     animate();
@@ -378,9 +380,10 @@ class Shape extends Component {
   }
 
   saveSVG = function () {
-    let publicUrl = 'https://minddesign-assets.s3.amazonaws.com/' + this.props.currentModel;
+    let currentUserName = this.props.auth.name === '' ? 'guest' : this.props.auth.name;
+    let publicUrl = `https://minddesign-assets.s3.amazonaws.com/${currentUserName}/designs/${this.props.currentModel}`;
     link.href = publicUrl;
-    link.download = 'myDesign.svg';
+    link.download = this.props.currentModel;
     link.click();
   } 
 
@@ -432,7 +435,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ renderDrawing, getFile, saveDesign }, dispatch);
+  return bindActionCreators({ renderDrawing, downloadFile, saveDesign }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Shape);

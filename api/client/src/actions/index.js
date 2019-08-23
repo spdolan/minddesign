@@ -1,10 +1,9 @@
 import axios from "axios";
-export const SAVE_DRAWING = 'SAVE_DRAWING';
+export const SAVE_DESIGN = 'SAVE_DESIGN';
 export const GET_FILE = 'GET_FILE';
-export const RENDER_DRAWING = 'RENDER_DRAWING';
+export const RENDER_DESIGN = 'RENDER_DESIGN';
 export const AUTH_USER = 'AUTH_USER';
 export const AUTH_ERROR = 'AUTH_ERROR';
-export const SAVE_DESIGN = 'SAVE_DESIGN';
 export const GET_DESIGN = 'GET_DESIGN';
 export const GET_DESIGNS = 'GET_DESIGNS';
 
@@ -52,22 +51,27 @@ export const signout = () => {
   };
 };
 
-export const updateDrawing = (fileName, svgString) => dispatch => {
+export const updateDesign = (fileName, svgString) => dispatch => {
   // console.log(svgString);
-  
-  axios.post(`public/${fileName}`,{
+  let userName = localStorage.getItem('name');
+  if(userName === ''){userName = 'guest'};
+
+  axios.post(`design/${userName}/${fileName}`,{
     data: svgString,
   }).then(function (response) {
     // console.log(response);
-    dispatch({ type: SAVE_DRAWING, payload: response.data });
+    dispatch({ type: SAVE_DESIGN, payload: response.data });
   })
     .catch(function (error) {
       console.log(error);
     });
 };
 
-export const getFile = (fileName) => dispatch => {
-  axios.get(`download/${fileName}`)
+export const downloadFile = (fileName) => dispatch => {
+  let userName = localStorage.getItem('name');
+  if (userName === '') { userName = 'guest' };
+
+  axios.get(`download/${userName}/${fileName}`)
     .then(function(response){
       
       dispatch({ type: GET_FILE, payload: response })
@@ -80,7 +84,7 @@ export const getFile = (fileName) => dispatch => {
 export const getUserDesigns = (userName) => dispatch => {
   // console.log(svgString);
 
-  axios.get(`${userName}/designs`)
+  axios.get(`user/${userName}/designs`)
   .then(function (response) {
     // console.log(response);
     dispatch({ type: GET_DESIGNS, payload: response.data });
@@ -93,7 +97,7 @@ export const getUserDesigns = (userName) => dispatch => {
 export const getUserDesign = (userName,designName) => dispatch => {
   // console.log(svgString);
 
-  axios.get(`${userName}/designs/${designName}`)
+  axios.get(`user/${userName}/designs/${designName}`)
     .then(function (response) {
       // console.log(response);
       dispatch({ type: GET_DESIGN, payload: response.data });
@@ -106,34 +110,10 @@ export const getUserDesign = (userName,designName) => dispatch => {
 export const saveDesign = (userName, designName) => dispatch => {
   // console.log(svgString);
 
-  axios.get(`user/${userName}/designs/${designName}/save`)
+  axios.get(`design/${userName}/${designName}/save`)
   .then(function (response) {
     // console.log(response);
     dispatch({ type: SAVE_DESIGN, payload: response.data });
-  })
-    .catch(function (error) {
-      console.log(error);
-    });
-};
-
-export const renderDrawing = (queryObject) => dispatch => {
-  let queryUrl = `${ROOT_URL}?`;
-  let queryString = ``;
-  let userName = localStorage.getItem('email')
-  const { fileString, extrude } = queryObject;
-
-  if (fileString) {
-    queryString += `file=${fileString}&`
-  }
-
-  if (extrude) {
-    queryString += `extrude=${extrude}&`
-  }
-
-  if (queryString.length > 0) { queryUrl += queryString };
-  axios.get(queryUrl).then(function (response) {
-    console.log(response);
-    dispatch({ type: RENDER_DRAWING, payload: response.data });
   })
     .catch(function (error) {
       console.log(error);

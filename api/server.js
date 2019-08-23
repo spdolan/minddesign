@@ -34,15 +34,15 @@ app.use(bodyParser.urlencoded({
 const authRoutes = require('./routes/auth');
 app.use('/auth', authRoutes);
 
-const publicRoutes = require('./routes/public');
-app.use('/public', publicRoutes);
-
 const userRoutes = require('./routes/user');
 app.use('/user', userRoutes);
 
-app.get('/download/:file', function (req, res) {
-  let file = req.params.file;
-  let path = `https://minddesign-assets.s3.amazonaws.com/${file}.svg`;
+const designRoutes = require('./routes/design');
+app.use('/design', designRoutes);
+
+app.get('/download/:userName/:fileName', function (req, res) {
+  let { userName, fileName} = req.params;
+  let path = `https://minddesign-assets.s3.amazonaws.com/${userName}/designs/${fileName}`;
   res.download(path);
   // res.send({file: path});
 });

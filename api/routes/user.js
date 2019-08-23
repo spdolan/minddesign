@@ -19,30 +19,24 @@ router.param('userName', function (req, res, next) {
   })
 });
 
-//PUT to save a user design
-router.get(`/:userName/designs/:designName/save`, (req, res) => {
-  let fileName = req.params.designName;
-  let path = 'https://minddesign-assets.s3.amazonaws.com/' + fileName + '.svg';
+//GET for user information
 
-  //we'll have a check for the file existing here
+//POST to update user information
+router.post('/:userName/edit', (req, res, next) => {
+  //checks below here for request body data validation
 
-  const design = new Design()
-
-  design.designName = fileName
-  design.designOwner = req.user._id
-  design.svgLink = path
-  design.designDescription = String,
-  design.likes = 0,
-  design.favorites = 0,
-  design.published = false
-
-  design.save(function (err, user) {
-    if (err) { return next(err) }
-
-    // Repond to request indicating the user was created
-    res.send([design])
-  });
-})
+  //Mongoose function to find and updated specific document
+  User.findByIdAndUpdate(req.user._id,
+    //we'll pass in our updates, Mongo is smart enough to overwrite what is present and leave the rest
+    req.body,
+    //this parameter tells Mongo to return the updated object to us
+    { new: true },
+    //return an error or return our shiny updated Student
+    function (err, result) {
+      if (err) return next(err);
+      res.send(result);
+    });
+});
 
 //GET all user designs
 router.get(`/:userName/designs`, (req, res) => {
@@ -72,8 +66,5 @@ router.get(`/:userName/designs/:designName`, (req, res) => {
       res.send([designs]);
     })
 })
-
-//POST to update a user design?
-
 
 module.exports = router;
