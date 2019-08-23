@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const DesignSchema = new Schema({
   designName: { type: String},
-  designOwner: {type: ObjectId},
+  designOwner: { type: Schema.Types.ObjectId, ref: 'User' },
   svgLink: String,
   stlLink: String,
   gcodeLink: String,

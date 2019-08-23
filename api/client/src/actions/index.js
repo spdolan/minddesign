@@ -18,6 +18,7 @@ export const signup = (formProps, callback) => dispatch => {
     dispatch({ type: AUTH_USER, payload: response.data });
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('email', response.data.email);
+    localStorage.setItem('name', response.data.name);
     callback();
   })
     .catch(function (error) {
@@ -33,6 +34,7 @@ export const signin = (formProps, callback) => dispatch => {
     dispatch({ type: AUTH_USER, payload: response.data });
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('email', response.data.email);
+    localStorage.setItem('name', response.data.name);
     callback();
   })
     .catch(function (error) {
@@ -43,7 +45,7 @@ export const signin = (formProps, callback) => dispatch => {
 export const signout = () => {
   localStorage.removeItem('token');
   localStorage.removeItem('email');
-
+  localStorage.removeItem('name');
   return {
     type: AUTH_USER,
     payload: ''
@@ -78,7 +80,7 @@ export const getFile = (fileName) => dispatch => {
 export const getUserDesigns = (userName) => dispatch => {
   // console.log(svgString);
 
-  axios.get(`user/${userName}/designs`)
+  axios.get(`${userName}/designs`)
   .then(function (response) {
     // console.log(response);
     dispatch({ type: GET_DESIGNS, payload: response.data });
@@ -91,7 +93,7 @@ export const getUserDesigns = (userName) => dispatch => {
 export const getUserDesign = (userName,designName) => dispatch => {
   // console.log(svgString);
 
-  axios.get(`user/${userName}/designs/${designName}`)
+  axios.get(`${userName}/designs/${designName}`)
     .then(function (response) {
       // console.log(response);
       dispatch({ type: GET_DESIGN, payload: response.data });

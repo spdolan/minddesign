@@ -13,12 +13,12 @@ class Canvas extends Component {
     this.createFileName = this.createFileName.bind(this);
   }
 
-  createRandomNumber = () => { return Math.floor(Math.random() * 10000000) }
+  createRandomNumber = () => { return Math.floor(Math.random() * 100000000) }
 
   createFileName = () => {
     let currentFile;
     if (this.props.auth.authenticated) {
-      currentFile = `${this.props.auth.email}-${this.createRandomNumber()}.svg`;
+      currentFile = `${this.props.auth.name}-${this.createRandomNumber()}.svg`;
     } else {
       currentFile = `guest-${this.createRandomNumber()}.svg`
     }

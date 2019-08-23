@@ -243,7 +243,7 @@ var loadSVG = function (svgUrl, extrude){
             const subPath = path.subPaths[k];
             var strokeGeometry, strokeMesh, threeDGeometry;
 
-            if (extrude) {
+            if (extrude && !svgUrl.includes('tiger')) {
               if (k < path.subPaths.length) {
                 strokeGeometry = new THREE.SVGLoader.pointsToStroke(subPath.getPoints(), path.userData.style);
                 let wirePoints = arrayToPoints(strokeGeometry.attributes.position.array);
@@ -303,6 +303,7 @@ class Shape extends Component {
     this.createGUI = this.createGUI.bind(this);
     this.saveSVG = this.saveSVG.bind(this);
     this.renderDownloadButton = this.renderDownloadButton.bind(this)
+    this.handleSaveDesign = this.handleSaveDesign.bind(this)
   }
 
   componentDidMount() {
@@ -312,7 +313,7 @@ class Shape extends Component {
     this.createGUI();
     this.mount.prepend(gui.domElement);
     // load a SVG resource
-    loadSVG('public/tiger.svg', false);
+    loadSVG('https://minddesign-assets.s3.amazonaws.com/tiger.svg', false);
     window.addEventListener('resize', onWindowResize, false);
     animate();
   }
@@ -320,13 +321,13 @@ class Shape extends Component {
   createGUI = () => {
     const update = () => {
       clearThree(scene);
-      let myURL = 'public/' + this.props.currentModel;
+      let myURL = 'https://minddesign-assets.s3.amazonaws.com/' + this.props.currentModel;
       this.setState({extrude: !this.state.extrude}, () => {
         loadSVG(myURL, this.state.extrude);
       })
     }
 
-    if (gui) gui.destroy();
+    // if (gui) this.mount.gui.destroy();
     gui = new GUI({ width: 150 });
     // var f1 = gui.addFolder('Flow Field');
     // const model = this.props.currentModel;
@@ -334,7 +335,7 @@ class Shape extends Component {
 }
 
   componentDidUpdate(){
-    let publicUrl = 'public/' + this.props.currentModel;
+    let publicUrl = 'https://minddesign-assets.s3.amazonaws.com/' + this.props.currentModel;
     clearThree(scene);
     loadSVG(publicUrl, this.state.extrude);   
     animate();
@@ -366,7 +367,9 @@ class Shape extends Component {
 
   handleSaveDesign(isLoggedInBoolean){
     if(isLoggedInBoolean){
-      this.props.saveDesign(this.props.currentModel, this.auth.email)
+      let dotPosition = this.props.currentModel.indexOf('.');
+      let designName = this.props.currentModel.slice(0,dotPosition);
+      this.props.saveDesign(this.props.auth.name, designName)
     } else {
       // alert('Feature not live yet! \n Check back in on Demo Night.')
       alert('You\'ll to need to be Signed In to save!  \n Please use the links in the navigation above.')
@@ -374,13 +377,7 @@ class Shape extends Component {
   }
 
   saveSVG = function () {
-    let publicUrl;
-    if(window.location.host.includes('3000')){
-      publicUrl = 'http://localhost:8000/download/' + this.props.currentModel;
-    } else {
-      publicUrl = 'https://ancient-plains-77128.herokuapp.com/download/' + this.props.currentModel;
-    }
-
+    let publicUrl = 'https://minddesign-assets.s3.amazonaws.com/' + this.props.currentModel;
     link.href = publicUrl;
     link.download = 'myDesign.svg';
     link.click();
@@ -400,8 +397,8 @@ class Shape extends Component {
                   className='btn btn-block btn-success mb-2'
                   onClick={e => {
                     e.preventDefault();
-                    alert('Feature not live yet! \n Check back in on Demo Night.')
-                    // exportBinary(group);
+                    // alert('Feature not live yet! \n Check back in on Demo Night.')
+                    this.handleSaveDesign(this.props.auth.authenticated)
                   }}
                 >
                   Save My Design

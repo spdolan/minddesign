@@ -20,9 +20,9 @@ router.param('userName', function (req, res, next) {
 });
 
 //GET to save a user design
-router.get(`user/:userName/designs/:designName/save`, (req, res) => {
-  let file = req.params.designName;
-  let path = __dirname + '/../public/' + file;
+router.get(`/:userName/designs/:designName/save`, (req, res) => {
+  let fileName = req.params.designName;
+  let path = 'https://minddesign-assets.s3.amazonaws.com/' + fileName + '.svg';
 
   //we'll have a check for the file existing here
 
@@ -40,12 +40,12 @@ router.get(`user/:userName/designs/:designName/save`, (req, res) => {
     if (err) { return next(err) }
 
     // Repond to request indicating the user was created
-    res.send({design})
+    res.send([design])
   });
 })
 
 //GET all user designs
-router.get(`user/:userName/designs`, (req, res) => {
+router.get(`/:userName/designs`, (req, res) => {
   
   Design
     .find({ designOwner: req.user._id})
@@ -59,7 +59,7 @@ router.get(`user/:userName/designs`, (req, res) => {
 })
 
 //GET single user design
-router.get(`user/:userName/designs/:designName`, (req, res) => {
+router.get(`/:userName/designs/:designName`, (req, res) => {
   let { designName } = req.params;
   
   Design
@@ -69,11 +69,11 @@ router.get(`user/:userName/designs/:designName`, (req, res) => {
       if (err) {
         res.status(400).send('Unable to find that design');
       }
-      res.send(designs);
+      res.send([designs]);
     })
 })
 
 //POST to update a user design?
 
 
-
+module.exports = router;

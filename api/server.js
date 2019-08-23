@@ -38,6 +38,9 @@ app.use(express.static('public'));
 const publicRoutes = require('./routes/public');
 app.use('/public', publicRoutes);
 
+const userRoutes = require('./routes/user');
+app.use('/user', userRoutes);
+
 app.post('/auth/signin', requireSignin, Authentication.signin)
 app.post('/auth/signup', Authentication.signup)
 

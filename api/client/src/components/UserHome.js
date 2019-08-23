@@ -35,7 +35,7 @@ class UserHome extends Component {
       return (
         <div className='row'>
           <div className='col-12'>
-            <h4>Hey! Looks like you don't have any design just yet...</h4>
+            <h4>Hey! Looks like you don't have any designs just yet...</h4>
           </div>
         </div>
       );

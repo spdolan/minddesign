@@ -7,17 +7,18 @@ const DesignCard = ({ design }) => {
 
   return (
     <div
-      className='card text-center align-middle text-black bg-light border-light shadow'
+      className='card text-center align-middle text-white bg-dark border-dark shadow'
       onClick={e => {
         e.preventDefault();
-        alert(`clicked design ${design.name}`);
+        alert(`clicked design ${design.designName}`);
       }}
     >
       <div className="card-body">
         <h5 className="card-title">
-          {design.name}
+          {design.designName}
         </h5>
-        <img src={design.svgLink} className="card-img-top" alt="sweet design"></img>
+        <img src={design.svgLink} height='auto' width='auto' className="card-img-top" alt="sweet design"></img>
+        
       </div>
       <div className='card-footer'>
         
