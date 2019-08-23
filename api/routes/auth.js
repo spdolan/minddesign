@@ -1,3 +1,4 @@
+const router = require('express').Router();
 const Authentication = require('./controllers/authentication')
 const passportService = require('./services/passport')
 const passport = require('passport')
@@ -5,6 +6,10 @@ const passport = require('passport')
 const requireAuth = passport.authenticate('jwt', { session: false })
 const requireSignin = passport.authenticate('local', { session: false })
 
+router.post('/signin', requireSignin, Authentication.signin)
+router.post('/signup', Authentication.signup)
+
+module.exports = router;
 // app.use(
 //   cookieSession({
 //     maxAge: 30 * 24 * 60 * 60 * 1000,
@@ -41,7 +46,4 @@ const requireSignin = passport.authenticate('local', { session: false })
   //   res.send(req.user)
   // })
 
-module.exports = function(app) {
-  app.post('/auth/signin', requireSignin, Authentication.signin)
-  app.post('/auth/signup', Authentication.signup)
-}
+

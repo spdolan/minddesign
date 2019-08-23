@@ -1,37 +1,24 @@
 const aws = require('aws-sdk');
-const multer = require('multer');
-const multerS3 = require('multer-s3');
 const config = require('../config/keys');
-
-aws.config.update({
-  secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
-  accessKeyId: config.AWS_ACCESS_KEY_ID,
-  region: 'us-east-2'
+const s3 = new AWS.S3({
+  accessKeyId: keys.AWS_ACCESS_KEY_ID,
+  secretAccessKey: keys.AWS_SECRET_ACCESS_KEY
+  // bucketName: keys.S3_BUCKET_NAME
 });
 
-const s3 = new aws.S3();
+exports.uploadS3File = function(userName,fileName,data) {
+  const params = {
+    Bucket: 'minddesign-assets',
+    Key: `${userName}/${fileName}`,
+    Body: data,
+    ACL: 'public-read-write',
+    ContentType: 'image/svg+xml',
+    ContentDisposition: 'attachment'
+  };
 
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype === 'xml/svg') {
-    cb(null, true);
-  } else {
-    cb(new Error('Invalid file type, only JPEG and PNG is allowed!'), false);
-  }
+  s3.upload(params, function (s3Err, data) {
+    if (s3Err) throw s3Err
+    return data.Location
+  });
+
 }
-
-const upload = multer({
-  fileFilter,
-  storage: multerS3({
-    acl: 'public-read-write',
-    s3,
-    bucket: config.S3_BUCKET_NAME,
-    metadata: function (req, file, cb) {
-      cb(null, {fieldName: 'TESTING_METADATA'});
-    },
-    key: function (req, file, cb) {
-      cb(null, Date.now().toString())
-    }
-  })
-});
-
-module.exports = upload;

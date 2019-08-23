@@ -31,9 +31,8 @@ app.use(bodyParser.urlencoded({
   extended: true
 }))
 
-//public folders are for local (server) save and send of files
-app.use('/public', express.static(__dirname + '/public'));  
-app.use(express.static('public'));
+const authRoutes = require('./routes/auth');
+app.use('/auth', authRoutes);
 
 const publicRoutes = require('./routes/public');
 app.use('/public', publicRoutes);
@@ -41,14 +40,9 @@ app.use('/public', publicRoutes);
 const userRoutes = require('./routes/user');
 app.use('/user', userRoutes);
 
-app.post('/auth/signin', requireSignin, Authentication.signin)
-app.post('/auth/signup', Authentication.signup)
-
-
-
 app.get('/download/:file', function (req, res) {
   let file = req.params.file;
-  let path = `${__dirname}/public/${file}`;
+  let path = `https://minddesign-assets.s3.amazonaws.com/${file}.svg`;
   res.download(path);
   // res.send({file: path});
 });

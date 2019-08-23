@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+var crypto = require('crypto');
 
 const DesignSchema = new Schema({
   designName: { type: String},
@@ -12,9 +13,23 @@ const DesignSchema = new Schema({
   likes: 0,
   favorites: 0,
   published: false,
+  salt: String,
+  hash: String,
   updated_at: Date,
-  created_at: Date,
+  created_at: Date
 });
+
+DesignSchema.methods.setName = function (name) {
+  this.salt = crypto.randomBytes(16).toString('hex');
+
+  this.hash = crypto.pbkdf2Sync(name, this.salt, 1000, 64, 'sha512').toString('hex');
+}
+
+DesignSchema.methods.validName = function (name) {
+  var hash = crypto.pbkdf2Sync(name, this.salt, 1000, 64, 'sha512').toString('hex');
+
+  return this.hash === hash;
+}
 
 //updates our individual schema every time
 DesignSchema.pre('save', function (next) {

@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const fs = require('fs');
 const keys = require('../config/keys');
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3({
@@ -12,15 +11,12 @@ const Design = require('../models/design')
 
 router.get('/:file', (req, res) => {
   let file = req.params.file;
-  // let userEmail = req.params.userEmail;
-  // console.log(req);
   let path = 'https://minddesign-assets.s3.amazonaws.com/' + file;
   res.sendFile(path);
 });
 
 router.post('/:file', (req, res) => {
   let file = req.params.file;
-  let path = __dirname + '/../public/' + file;
   // console.log(path);
   var regex = /><\/path>/g;
   let svgStyled = req.body.data.replace(regex, ' style="stroke-width:10;"></path >');
