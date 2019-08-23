@@ -369,10 +369,11 @@ class Shape extends Component {
     if(isLoggedInBoolean){
       let dotPosition = this.props.currentModel.indexOf('.');
       let designName = this.props.currentModel.slice(0,dotPosition);
-      this.props.saveDesign(this.props.auth.name, designName)
+      this.props.saveDesign(this.props.auth.name, designName);
+      alert(`Designed saved! Check it out under ${this.props.auth.name}'s Designs`);
     } else {
       // alert('Feature not live yet! \n Check back in on Demo Night.')
-      alert('You\'ll to need to be Signed In to save!  \n Please use the links in the navigation above.')
+      alert('You\'ll to need to be Signed In to save! \nPlease use the links in the navigation above.')
     }
   }
 

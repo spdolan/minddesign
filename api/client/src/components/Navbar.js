@@ -13,7 +13,7 @@ const Navbar = ({ authenticated, email, name, signout }) => {
     if (authenticated) {
       return (
         <>
-          <li className='nav-item mr-3'><Link to="/user/home" className='btn btn-md btn-secondary'>{name}</Link></li>
+          <li className='nav-item mr-3'><Link to="/user/home" className='btn btn-md btn-secondary'>{name}'s Designs</Link></li>
           <li className='nav-item'>
             <button
               onClick={handleSignOutClick}
