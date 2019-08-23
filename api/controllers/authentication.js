@@ -1,6 +1,6 @@
 const jwt = require('jwt-simple')
 const User = require('../models/user')
-const keys = require('../config/dev')
+const keys = require('../config')
 
 function tokenForUser(user) {
   return jwt.encode({ sub: user.id,
