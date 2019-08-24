@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { renderDrawing, downloadFile, saveDesign } from '../actions';
+import { downloadFile, saveDesign } from '../actions';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import THREE from "../three";
@@ -313,7 +313,7 @@ class Shape extends Component {
     this.createGUI();
     this.mount.prepend(gui.domElement);
     // load a SVG resource
-    loadSVG('https://minddesign-assets.s3.amazonaws.com/tiger.svg', false);
+    loadSVG('https://minddesign-assets.s3.amazonaws.com/MDlogo-v0.svg', false);
     window.addEventListener('resize', onWindowResize, false);
     animate();
   }
@@ -321,8 +321,8 @@ class Shape extends Component {
   createGUI = () => {
     const update = () => {
       clearThree(scene);
-      let currentUserName = this.props.auth.name === '' ? 'guest' : this.props.auth.name;
-      let myUrl = `https://minddesign-assets.s3.amazonaws.com/${currentUserName}/designs/${this.props.currentModel}`;
+      let currentUserId = this.props.auth.id === '' ? 'guest' : this.props.auth.id;
+      let myUrl = `https://minddesign-assets.s3.amazonaws.com/${currentUserId}/designs/${this.props.currentModel}`;
       this.setState({extrude: !this.state.extrude}, () => {
         loadSVG(myUrl, this.state.extrude);
       })
@@ -336,8 +336,8 @@ class Shape extends Component {
 }
 
   componentDidUpdate(){
-    let currentUserName = this.props.auth.name === '' ? 'guest' : this.props.auth.name;
-    let publicUrl = `https://minddesign-assets.s3.amazonaws.com/${currentUserName}/designs/${this.props.currentModel}`;
+    let currentUserId = this.props.auth.id === '' || this.props.auth.id === undefined ? 'guest' : this.props.auth.id;
+    let publicUrl = `https://minddesign-assets.s3.amazonaws.com/${currentUserId}/designs/${this.props.currentModel}`;
     clearThree(scene);
     loadSVG(publicUrl, this.state.extrude);   
     animate();
@@ -371,7 +371,7 @@ class Shape extends Component {
     if(isLoggedInBoolean){
       let dotPosition = this.props.currentModel.indexOf('.');
       let designName = this.props.currentModel.slice(0,dotPosition);
-      this.props.saveDesign(this.props.auth.name, designName);
+      this.props.saveDesign(this.props.auth.id, designName);
       alert(`Designed saved! Check it out under ${this.props.auth.name}'s Designs`);
     } else {
       // alert('Feature not live yet! \n Check back in on Demo Night.')
@@ -380,8 +380,8 @@ class Shape extends Component {
   }
 
   saveSVG = function () {
-    let currentUserName = this.props.auth.name === '' ? 'guest' : this.props.auth.name;
-    let publicUrl = `https://minddesign-assets.s3.amazonaws.com/${currentUserName}/designs/${this.props.currentModel}`;
+    let currentUserId = this.props.auth.id === '' ? 'guest' : this.props.auth.id;
+    let publicUrl = `https://minddesign-assets.s3.amazonaws.com/${currentUserId}/designs/${this.props.currentModel}`;
     link.href = publicUrl;
     link.download = this.props.currentModel;
     link.click();
@@ -435,7 +435,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ renderDrawing, downloadFile, saveDesign }, dispatch);
+  return bindActionCreators({ downloadFile, saveDesign }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Shape);

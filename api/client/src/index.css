@@ -25,3 +25,7 @@ code {
 .navbar-nav { 
     flex-direction: row;
 }
+
+.svg-img{
+  background: #ffffff;
+}

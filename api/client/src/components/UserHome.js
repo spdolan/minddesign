@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { getUserDesigns } from '../actions';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import DesignCard from './DesignCard';
+import DesignGrid from './DesignGrid';
 
 class UserHome extends Component {
   constructor(props) {
@@ -11,57 +11,34 @@ class UserHome extends Component {
   }
 
   componentDidMount(){
-    this.props.getUserDesigns(this.props.auth.name)
-  }
-
-  renderDesigns(designArray){
-    
-    return(designArray.map(design => {
-      return <DesignCard design={design} key={design._id}/>
-    }))
+    this.props.getUserDesigns(this.props.auth.id)
   }
 
   render() {
-
-    if (!this.props.designs) {
-      return (
-        <div className='row'>
-          <div className='col-12'>
-            <h1>Nothing to see here yet... hold please...</h1>
+    return (
+      <>
+      <div className='row'>
+        <div className='col-12 text-center'>
+          <div className='jumbotron'>
+            <h3>{this.props.auth.name}</h3>
           </div>
         </div>
-      );
-    } else if (this.props.designs.length === 0) {
-      return (
-        <div className='row'>
-          <div className='col-12'>
-            <h4>Hey! Looks like you don't have any designs just yet...</h4>
-          </div>
+      </div>
+      <div className='row'>
+        <div className='col-12'>
+          <DesignGrid />
         </div>
-      );
-    } else
-
-      return (
-        <div className='row'>
-          <div className='col-12'>
-            <div className='card-group'>
-              <div className="card-columns mb-4">
-                {this.renderDesigns(this.props.designs)}
-              </div>
-            </div>
-          </div>
-        </div>
-        
-      );
-
+      </div>
+      </>
+    );
   }
 }
 
 function mapStateToProps(state) {
   return {
-    auth: state.auth,
-    designs: state.designs,
-    timeStamp: state.timeStamp
+    auth: state.auth
+    // designs: state.designs
+    // timeStamp: state.timeStamp
   };
 }
 

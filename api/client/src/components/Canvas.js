@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { updateDrawing, getFile } from '../actions';
+import { updateDesign } from '../actions';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import SignatureCanvas from 'react-signature-canvas';
@@ -45,7 +45,7 @@ class Canvas extends Component {
       svgDataURL: this.sigPad.toDataURL('image/svg+xml')
     }, () => {
         let mySVG = this.state.svgDataURL.split(',');
-        this.props.updateDrawing(this.state.fileName, atob(mySVG[1]));
+        this.props.updateDesign(this.state.fileName, atob(mySVG[1]));
         // this.props.setFile(this.state.fileName);
     })
   }
@@ -102,7 +102,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ updateDrawing, getFile }, dispatch);
+  return bindActionCreators({ updateDesign }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Canvas);

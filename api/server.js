@@ -17,8 +17,6 @@ const requireGoogleAuth = passport.authenticate('google',
   })
 const requireSignin = passport.authenticate('local', { session: false })
 const keys = require('./config/keys');
-const uploadService = require('./services/file-upload')
-const singleUpload = uploadService.single('svg');
 const app = express()
 // DB Setup
 mongoose.connect(keys.MONGODB_URI, { useNewUrlParser: true });
@@ -34,11 +32,11 @@ app.use(bodyParser.urlencoded({
 const authRoutes = require('./routes/auth');
 app.use('/auth', authRoutes);
 
-const userRoutes = require('./routes/user');
-app.use('/user', userRoutes);
+const userRoutes = require('./routes/users');
+app.use('/users', userRoutes);
 
-const designRoutes = require('./routes/design');
-app.use('/design', designRoutes);
+const designRoutes = require('./routes/designs');
+app.use('/designs', designRoutes);
 
 app.get('/download/:userName/:fileName', function (req, res) {
   let { userName, fileName} = req.params;

@@ -13,7 +13,7 @@ const Navbar = ({ authenticated, email, name, signout }) => {
     if (authenticated) {
       return (
         <>
-          <li className='nav-item mr-3'><Link to="/user/home" className='btn btn-md btn-secondary'>{name}'s Designs</Link></li>
+          <li className='nav-item mr-3'><Link to="/home" className='btn btn-md btn-secondary'>{name}'s Designs</Link></li>
           <li className='nav-item'>
             <button
               onClick={handleSignOutClick}
@@ -38,7 +38,9 @@ const Navbar = ({ authenticated, email, name, signout }) => {
   return (
 
     <nav className="navbar fixed-top navbar-dark bg-dark align-middle text-align-middle">
-      <NavLink className="navbar-brand" to="/">MindDesign</NavLink>
+      <a className="navbar-brand" href='/'>
+        <img src={ process.env.PUBLIC_URL + '/MindDesignv1.png'} width="auto" height="30" className='d-inline-block align-top' alt='Mind Design'/>
+      </a>
       {/* <form class="form-inline">
             <input class="form-control mr-sm-2" type="search" placeholder="Search Designs" aria-label="Search" ></input>
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>

@@ -1,7 +1,7 @@
 module.exports = {
   MONGODB_URI: 'mongodb://localhost/minddesign',
   TOKEN_SECRET: 'greatstufftomake',
-  AWS_ACCESS_KEY_ID: 'AKIAIQ3YDR3THJJJBDXA',
-  AWS_SECRET_ACCESS_KEY: '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',
+  AWS_ACCESS_KEY_ID: 'AKIAIF3BJ4VVXQWM4BJA',
+  AWS_SECRET_ACCESS_KEY: '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',
   S3_BUCKET_NAME: 'minddesign-assets'
 };

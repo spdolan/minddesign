@@ -1,6 +1,6 @@
 const jwt = require('jwt-simple')
 const User = require('../models/user')
-const keys = require('../config')
+const keys = require('../config/keys')
 
 function tokenForUser(user) {
   return jwt.encode({ sub: user.id,
@@ -14,7 +14,8 @@ exports.signin = function(req, res, next) {
   res.send({
     token: tokenForUser(req.user),
     email: req.user.email,
-    name: req.user.name
+    name: req.user.name,
+    id: req.user._id
   })
 }
 
@@ -52,7 +53,7 @@ exports.signup = function(req, res, next) {
       if (err) { return next(err) }
 
       // Repond to request indicating the user was created
-      res.json({ token: tokenForUser(user), email: user.email, name: user.name })
+      res.json({ token: tokenForUser(user), email: user.email, name: user.name, id: user._id })
     });
   });
 }

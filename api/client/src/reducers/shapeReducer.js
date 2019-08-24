@@ -1,16 +1,14 @@
-import { SAVE_DESIGN } from "../actions";
+import { SAVE_DESIGN, GET_DESIGN, AUTH_USER } from "../actions";
 
-export default function (state = 'tiger.svg', action) {
+export default function (state = 'MDlogo-v0.svg', action) {
   switch (action.type) {
-    case SAVE_DESIGN:
-      // let newState = {
-      //   ...state,
-      //   filters: [...state.filters, action.filter]
-      // }
-      // cache.writeData('state', newState)
-      // console.log(action)
-      
+    case SAVE_DESIGN:     
       return action.payload.fileName
+    case GET_DESIGN:
+      let designName = `${action.payload.data[0].designName}.svg`
+      return designName
+    case AUTH_USER:
+      return 'MDlogo-v0.svg'
   default:
     return state;
   }

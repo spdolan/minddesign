@@ -1,6 +1,6 @@
 const aws = require('aws-sdk');
-const config = require('../config/keys');
-const s3 = new AWS.S3({
+const keys = require('../config/keys');
+const s3 = new aws.S3({
   accessKeyId: keys.AWS_ACCESS_KEY_ID,
   secretAccessKey: keys.AWS_SECRET_ACCESS_KEY
   // bucketName: keys.S3_BUCKET_NAME
