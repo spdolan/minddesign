@@ -5,7 +5,7 @@ export default function (state = 'MDlogo-v0.svg', action) {
     case SAVE_DESIGN:     
       return action.payload.fileName
     case GET_DESIGN:
-      let designName = `${action.payload.data[0].designName}.svg`
+      let designName = `${action.payload[0].designName}.svg`
       return designName
     case AUTH_USER:
       return 'MDlogo-v0.svg'

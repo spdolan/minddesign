@@ -89,14 +89,14 @@ router.get(`/:userId/:fileName/save`, (req, res) => {
 //GET single user design
 router.get(`/:designId`, (req, res) => {
   let { designId } = req.params;
-  console.log(designId);
   Design
     .findById(designId)
     .exec((err, design) => {
       if (err) {
         res.status(400).send('Unable to find that design');
       }
-      res.send(design);
+      
+      res.send([design]);
     })
 })
 

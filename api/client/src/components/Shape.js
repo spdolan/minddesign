@@ -312,10 +312,22 @@ class Shape extends Component {
     clearThree(scene);
     this.createGUI();
     this.mount.prepend(gui.domElement);
+
     // load a SVG resource
-    loadSVG('https://minddesign-assets.s3.amazonaws.com/MDlogo-v0.svg', false);
+    if (this.props.currentUrl){
+      clearThree(scene);
+      let myUrl = `https://minddesign-assets.s3.amazonaws.com/${this.props.auth.id}/designs/${this.props.currentModel}`;
+      loadSVG(myUrl, false);
+    } else {
+      loadSVG('https://minddesign-assets.s3.amazonaws.com/MDlogo-v0.svg', false);
+    }
+    
     window.addEventListener('resize', onWindowResize, false);
     animate();
+  }
+
+  componentDidUnmount(){
+    clearThree(scene);
   }
 
   createGUI = () => {
@@ -396,6 +408,8 @@ class Shape extends Component {
               <div className='col-6'>
                 {this.renderDownloadButton(this.state.extrude)}
               </div>
+              { this.props.currentUrl ? 
+              <div></div> :
               <div className='col-6'>
                 <button
                   className='btn btn-block btn-success mb-2'
@@ -407,7 +421,7 @@ class Shape extends Component {
                 >
                   Save My Design
                 </button>
-              </div>
+              </div>}
             </div>
           
             <div ref={ref => (this.mount = ref)} 
@@ -426,11 +440,13 @@ class Shape extends Component {
   }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state, ownProps) {
+  console.log(ownProps);
   return {
     currentModel: state.currentModel,
     timeStamp: state.timeStamp,
-    auth: state.auth
+    auth: state.auth,
+    currentUrl: ownProps.url
   };
 }
 

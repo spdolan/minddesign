@@ -7,8 +7,6 @@ export const AUTH_ERROR = 'AUTH_ERROR';
 export const GET_DESIGN = 'GET_DESIGN';
 export const GET_DESIGNS = 'GET_DESIGNS';
 
-const ROOT_URL = "http://localhost:8000/";
-
 export const signup = (formProps, callback) => dispatch => {
   axios.post(
     'auth/signup',
@@ -59,7 +57,7 @@ export const updateDesign = (fileName, svgString) => dispatch => {
   let userId = localStorage.getItem('id');
   if(!userId){userId = 'guest'};
   
-  axios.post(`designs/${userId}/${fileName}`,{
+  axios.post(`/designs/${userId}/${fileName}`,{
     data: svgString,
   }).then(function (response) {
     // console.log(response);
@@ -74,7 +72,7 @@ export const downloadFile = (fileName) => dispatch => {
   let userId = localStorage.getItem('id');
   if (userId === '') { userId = 'guest' };
 
-  axios.get(`download/${userId}/${fileName}`)
+  axios.get(`/download/${userId}/${fileName}`)
     .then(function(response){
       
       dispatch({ type: GET_FILE, payload: response })
@@ -86,7 +84,7 @@ export const downloadFile = (fileName) => dispatch => {
 
 export const getUserDesigns = (userId) => dispatch => {
 
-  axios.get(`users/${userId}/designs`)
+  axios.get(`/users/${userId}/designs`)
   .then(function (response) {
     // console.log(response);
     dispatch({ type: GET_DESIGNS, payload: response.data });
@@ -99,9 +97,9 @@ export const getUserDesigns = (userId) => dispatch => {
 export const getDesign = (designId) => dispatch => {
   // console.log(svgString);
 
-  axios.get(`designs/${designId}`)
+  axios.get(`/designs/${designId}`)
     .then(function (response) {
-      // console.log(response);
+      
       dispatch({ type: GET_DESIGN, payload: response.data });
     })
     .catch(function (error) {
@@ -112,7 +110,7 @@ export const getDesign = (designId) => dispatch => {
 export const saveDesign = (userId, designName) => dispatch => {
   // console.log(svgString);
 
-  axios.get(`designs/${userId}/${designName}/save`)
+  axios.get(`/designs/${userId}/${designName}/save`)
   .then(function (response) {
     // console.log(response);
     dispatch({ type: SAVE_DESIGN, payload: response.data });

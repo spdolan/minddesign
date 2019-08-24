@@ -8,6 +8,8 @@ export default function (state = [], action) {
     case GET_DESIGNS:
       // console.log(action.payload)
       return action.payload
+    case GET_DESIGN:
+      return action.payload
     default:
       return state;
   }
