@@ -326,7 +326,7 @@ class Shape extends Component {
     animate();
   }
 
-  componentDidUnmount(){
+  componentWillUnmount(){
     clearThree(scene);
   }
 
@@ -441,7 +441,7 @@ class Shape extends Component {
 }
 
 function mapStateToProps(state, ownProps) {
-  console.log(ownProps);
+  
   return {
     currentModel: state.currentModel,
     timeStamp: state.timeStamp,

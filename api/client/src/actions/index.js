@@ -57,6 +57,7 @@ export const updateDesign = (fileName, svgString) => dispatch => {
   let userId = localStorage.getItem('id');
   if(!userId){userId = 'guest'};
   
+
   axios.post(`/designs/${userId}/${fileName}`,{
     data: svgString,
   }).then(function (response) {
