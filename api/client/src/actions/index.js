@@ -6,6 +6,7 @@ export const AUTH_USER = 'AUTH_USER';
 export const AUTH_ERROR = 'AUTH_ERROR';
 export const GET_DESIGN = 'GET_DESIGN';
 export const GET_DESIGNS = 'GET_DESIGNS';
+export const SLICE_DESIGN = 'SLICE_DESIGN';
 
 export const signup = (formProps, callback) => dispatch => {
   axios.post(
@@ -116,6 +117,21 @@ export const saveDesign = (userId, designName) => dispatch => {
     // console.log(response);
     dispatch({ type: SAVE_DESIGN, payload: response.data });
   })
+    .catch(function (error) {
+      console.log(error);
+    });
+};
+
+export const createGcode = (designName) => dispatch => {
+  
+  let userId = localStorage.getItem('id');
+  if (userId === '') { userId = 'guest' };
+  axios.get(`/designs/${userId}/${designName}/gcode`)
+    .then(function (response) {
+      // console.log(response);
+      // dispatch({ type: SLICE_DESIGN, payload: response.data });
+      alert(response.data);
+    })
     .catch(function (error) {
       console.log(error);
     });

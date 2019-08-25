@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { downloadFile, saveDesign } from '../actions';
+import { downloadFile, saveDesign, createGcode } from '../actions';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import THREE from "../three";
@@ -9,6 +9,8 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import Button from 'react-bootstrap/Button';
 import ToggleButton from 'react-bootstrap/ToggleButton';
+import LoadingModal from './LoadingModal';
+import cmd from 'node-cmd';
 
 // === THREE.JS CODE START ===
 var scene = new THREE.Scene();
@@ -35,11 +37,6 @@ renderer.setSize(threeWidth, threeHeight);
 //add in pan/view options
 var controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.screenSpacePanning = true;
-
-var guiData = {
-  currentModel: 'tiger.svg',
-  extrude: false
-};
 
 // instantiate a loader, exporter, and group
 var loader = new THREE.SVGLoader();
@@ -72,8 +69,8 @@ var onWindowResize = function () {
   renderer.setSize(threeWidth, threeHeight);
 }
 
-var clearThree = function (obj) {
-  while (obj.children.length > 1) {
+var clearThree = function (obj, num = 1) {
+  while (obj.children.length > num) {
     clearThree(obj.children[(obj.children.length - 1)])
     obj.remove(obj.children[(obj.children.length - 1)]);
   }
@@ -103,13 +100,15 @@ var exportASCII = function(meshGroup) {
   // let objectExtension = objectName + '.stl'
   saveString(result, 'thing.stl');
 }
-var exportBinary = function (meshGroup) {
-  scaleGroup(meshGroup, 0.15);
+var exportBinary = function (meshGroup, thingName) {
+  console.log(meshGroup);
+  scaleGroup(meshGroup, 0.25);
   meshGroup.updateMatrixWorld(true);
   var result = exporter.parse(meshGroup, { binary: true });
-  saveArrayBuffer(result, 'thing.stl');
-  scaleGroup(meshGroup, 6.1);
-  meshGroup.updateMatrixWorld(true);
+  saveArrayBuffer(result, `${thingName}.stl`);
+  clearThree(scene, 2);
+  // scaleGroup(meshGroup, 6.1);
+  // meshGroup.updateMatrixWorld(true);
 }
 
 var saveString = function(text, filename) {
@@ -125,6 +124,8 @@ var save = function (blob, filename) {
   link.click();
 }
 
+
+
 const arrayToPoints = function(array){
   let removeZeroArray = array.filter(point => { return point !== 0 });  
   let newArray = [];
@@ -134,8 +135,6 @@ const arrayToPoints = function(array){
   }
   return newArray;
 }
-
-var gui;
 
 const setInitialScale = (svgUrl) => {
   var scalarSettings;
@@ -170,7 +169,7 @@ const createStampBase = (extrude, shape, group, materialArray, svgUrl) => {
     var baseShape;
     if (shape === 'circle') {
       var baseRadius = (1 / group.scale.x) * boxShape.geometry.boundingSphere.radius;
-      var baseHeight = 3;
+      var baseHeight = 2;
       var baseGeometry = new THREE.CylinderBufferGeometry(baseRadius, baseRadius, baseHeight, 64);
       baseShape = new THREE.Mesh(baseGeometry, materialArray);
       baseShape.position.set((1 / group.scale.x) * (Math.abs(group.position.x) + groupCenterX), -(1 / group.scale.y) * (Math.abs(group.position.y) - groupCenterY), baseHeight / 2);
@@ -212,7 +211,7 @@ var loadSVG = function (svgUrl, extrude){
       group = new THREE.Group();
       
       const extrudeSettings = {
-        depth: 7,
+        depth: 10,
         steps: 1,
         bevelEnabled: false,
         bevelThickness: 2,
@@ -234,9 +233,17 @@ var loadSVG = function (svgUrl, extrude){
           const shapes = path.toShapes(true);
           for (let j = 0; j < shapes.length; j++) {
             const shape = shapes[j];
-            const geometry = new THREE.ShapeBufferGeometry(shape);
-            const mesh = new THREE.Mesh(geometry, material);
-            group.add(mesh);
+            
+            if (extrude) {
+              const fillGeometry = new THREE.ExtrudeBufferGeometry(shape, extrudeSettings);
+              group.add(fillGeometry);
+                               
+            } else {
+              const geometry = new THREE.ShapeBufferGeometry(shape);
+              const mesh = new THREE.Mesh(geometry, material);
+              group.add(mesh);
+            }
+            
           }
         }
 
@@ -297,22 +304,6 @@ var loadSVG = function (svgUrl, extrude){
   );
 }
 
-function ToggleButtonGroupControlled() {
-  const [value, setValue] = React.useState(true);
-  /*
-   * The second argument that will be passed to
-   * `handleChange` from `ToggleButtonGroup`
-   * is the SyntheticEvent object, but we are
-   * not using it in this example so we will omit it.
-   */
-  const handleChange = () => setValue(!value);
-
-  return (
-    <ToggleButtonGroup type="checkbox" value={value} onChange={handleChange}>
-      <ToggleButton value={1}>{value ? 'Make 3D' : 'Flatten'}</ToggleButton>
-    </ToggleButtonGroup>
-  );
-}
 
 class Shape extends Component {
 
@@ -323,7 +314,7 @@ class Shape extends Component {
       extrude: false,
       isLoading: false
     }
-    this.createGUI = this.createGUI.bind(this);
+
     this.saveSVG = this.saveSVG.bind(this);
     this.renderDownloadButton = this.renderDownloadButton.bind(this)
     this.handleSaveDesign = this.handleSaveDesign.bind(this)
@@ -333,8 +324,6 @@ class Shape extends Component {
     // use ref as a mount point of the Three.js scene instead of the document.body
     this.mount.appendChild(renderer.domElement);
     clearThree(scene);
-    // this.createGUI();
-    // this.mount.prepend(gui.domElement);
 
     // load a SVG resource
     if (this.props.currentUrl){
@@ -353,23 +342,6 @@ class Shape extends Component {
     clearThree(scene);
   }
 
-  createGUI = () => {
-    const update = () => {
-      clearThree(scene);
-      let currentUserId = this.props.auth.id === '' ? 'guest' : this.props.auth.id;
-      let myUrl = `https://minddesign-assets.s3.amazonaws.com/${currentUserId}/designs/${this.props.currentModel}`;
-      this.setState({extrude: !this.state.extrude}, () => {
-        loadSVG(myUrl, this.state.extrude);
-      })
-    }
-
-    // if (gui) this.mount.gui.destroy();
-    gui = new GUI({ width: 150 });
-    // var f1 = gui.addFolder('Flow Field');
-    // const model = this.props.currentModel;
-    gui.add(guiData, 'extrude').name('Extrude?').onChange(update);
-}
-
   componentDidUpdate(){
     let currentUserId = this.props.auth.id === '' || this.props.auth.id === undefined ? 'guest' : this.props.auth.id;
     let publicUrl = `https://minddesign-assets.s3.amazonaws.com/${currentUserId}/designs/${this.props.currentModel}`;
@@ -385,8 +357,9 @@ class Shape extends Component {
         className='btn btn-block btn-primary mb-2'
         onClick={e => {
           e.preventDefault();
+          let grabModelName = this.props.currentModel.split('.');
           // alert('Feature not live yet! \n Check back in on Demo Night.');
-          exportBinary(group);
+          exportBinary(group, grabModelName[0]);
         }}
       >
         Download As 3D Mini-Stamp
@@ -415,7 +388,7 @@ class Shape extends Component {
     }
   }
 
-  saveSVG = function () {
+  saveSVG = () => {
     let currentUserId = this.props.auth.id === '' ? 'guest' : this.props.auth.id;
     let publicUrl = `https://minddesign-assets.s3.amazonaws.com/${currentUserId}/designs/${this.props.currentModel}`;
     link.href = publicUrl;
@@ -423,13 +396,29 @@ class Shape extends Component {
     link.click();
   } 
 
+  // createGcode = (modelName) => {
+
+  //   cmd.get(
+  //     'pwd',
+  //     function (err, data, stderr) {
+  //       console.log('the current working dir is : ', data)
+  //     }
+  //   );
+  //   // let grabModelName = modelName.split('.');
+  //   // let createGcode = `pslicer --load config.ini --export-gcode ${grabModelName[0]}.stl`;
+  //   // cmd.run(createGcode);
+  // }
+
   update = () => {
+    // let loadingSpinner = <i className="fas fa-spinner fa-pulse"></i>;
+    // this.mount.prepend(loadingSpinner)
     clearThree(scene);
     let currentUserId = this.props.auth.id === '' ? 'guest' : this.props.auth.id;
     let myUrl = `https://minddesign-assets.s3.amazonaws.com/${currentUserId}/designs/${this.props.currentModel}`;
-    this.setState({ extrude: !this.state.extrude }, () => {
+    this.setState({ extrude: !this.state.extrude}, () => {
       loadSVG(myUrl, this.state.extrude);
     })
+    // loadingSpinner.destroy();
   }
 
   render() {
@@ -462,9 +451,20 @@ class Shape extends Component {
                 <ToggleButtonGroup type="checkbox" value={this.state.extrude} onChange={this.update}>
                   <ToggleButton value={1} variant="info">{this.state.extrude ? 'Flatten' : 'Make 3D' }</ToggleButton>
                 </ToggleButtonGroup>
+
+                <button
+                  className='btn btn-md btn-secondary ml-3'
+                  onClick={e => {
+                    e.preventDefault();
+                    let grabModelName = this.props.currentModel.split('.');
+                    this.props.createGcode(grabModelName[0])
+                  }}
+                >
+                  Create GCode
+                </button>
               </div>
             </div>
-
+            
             <div ref={ref => (this.mount = ref)} />
 
             <div className='row'>
@@ -495,7 +495,7 @@ function mapStateToProps(state, ownProps) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ downloadFile, saveDesign }, dispatch);
+  return bindActionCreators({ downloadFile, saveDesign, createGcode }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Shape);

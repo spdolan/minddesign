@@ -12,6 +12,8 @@ const s3 = new aws.S3({
   secretAccessKey: keys.AWS_SECRET_ACCESS_KEY
   // bucketName: keys.S3_BUCKET_NAME
 });
+const cmd = require('node-cmd');
+const exec = require('child_process').exec;
 
 router.param('userId', function (req, res, next) {
   let { userId } = req.params;
@@ -84,6 +86,28 @@ router.get(`/:userId/:fileName/save`, (req, res) => {
     // Repond to request indicating the design was created
     res.send([design])
   });
+})
+
+router.get(`/:userId/:fileName/gcode`, (req, res) => {
+  let { fileName } = req.params
+  runCmd = `pslicer --load config.ini --export-gcode ${fileName}.stl`
+  console.log(runCmd);
+  
+  exec(runCmd,
+    { shell: 'C:/RailsInstaller/Git/git-bash.exe',
+      cwd:  'C:/Users/snpdo/Downloads/Demo\ Night/'
+    }, 
+   (error, stdout, stderr) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return;
+    }
+    res.send(`Design ${fileName} sucessfully converted to GCode file!`)
+  });
+
+  // cmd.run(
+  //   `cd ../../Downloads/Demo\ Night && pslicer --load config.ini --export-gcode ${fileName}.stl`
+  // );
 })
 
 //GET single user design
