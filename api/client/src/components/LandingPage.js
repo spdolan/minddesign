@@ -44,10 +44,21 @@ const LandingPage = ({auth}) => {
 
   const [modalShow, setModalShow] = React.useState(modalOnLanding);
 
+  const guestGreeting = () => {
+    let greetings = [
+      'Let\'s start Making!',
+      'Hand drawn, beyond hand-made.',
+      'Hand-made in 2019.',
+      'Picture beyond pixels.'
+    ]
+    let randomGreeting = Math.floor(Math.random() * greetings.length);
+    return greetings[randomGreeting];
+  }
+
   const renderGreeting = (auth) => {
     return auth.authenticated ?
         <h1 className="display-5">Welcome back, {auth.name}</h1> :
-        <h1 className="display-5">Mind Design</h1>
+      <h1 className="display-5">{guestGreeting()}</h1>
     }
     
   return (

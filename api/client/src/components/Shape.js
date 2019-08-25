@@ -4,6 +4,11 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import THREE from "../three";
 import { GUI } from 'three/examples/js/libs/dat.gui.min.js';
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
+import Button from 'react-bootstrap/Button';
+import ToggleButton from 'react-bootstrap/ToggleButton';
 
 // === THREE.JS CODE START ===
 var scene = new THREE.Scene();
@@ -292,6 +297,23 @@ var loadSVG = function (svgUrl, extrude){
   );
 }
 
+function ToggleButtonGroupControlled() {
+  const [value, setValue] = React.useState(true);
+  /*
+   * The second argument that will be passed to
+   * `handleChange` from `ToggleButtonGroup`
+   * is the SyntheticEvent object, but we are
+   * not using it in this example so we will omit it.
+   */
+  const handleChange = () => setValue(!value);
+
+  return (
+    <ToggleButtonGroup type="checkbox" value={value} onChange={handleChange}>
+      <ToggleButton value={1}>{value ? 'Make 3D' : 'Flatten'}</ToggleButton>
+    </ToggleButtonGroup>
+  );
+}
+
 class Shape extends Component {
 
   constructor(props){
@@ -311,8 +333,8 @@ class Shape extends Component {
     // use ref as a mount point of the Three.js scene instead of the document.body
     this.mount.appendChild(renderer.domElement);
     clearThree(scene);
-    this.createGUI();
-    this.mount.prepend(gui.domElement);
+    // this.createGUI();
+    // this.mount.prepend(gui.domElement);
 
     // load a SVG resource
     if (this.props.currentUrl){
@@ -401,12 +423,21 @@ class Shape extends Component {
     link.click();
   } 
 
+  update = () => {
+    clearThree(scene);
+    let currentUserId = this.props.auth.id === '' ? 'guest' : this.props.auth.id;
+    let myUrl = `https://minddesign-assets.s3.amazonaws.com/${currentUserId}/designs/${this.props.currentModel}`;
+    this.setState({ extrude: !this.state.extrude }, () => {
+      loadSVG(myUrl, this.state.extrude);
+    })
+  }
+
   render() {
     return (
       <div className='container text-center'>
         <div className='row'>
           <div className='col-12'>
-            <div className='row'>
+            <div className='row mb-2'>
               <div className='col-6'>
                 {this.renderDownloadButton(this.state.extrude)}
               </div>
@@ -414,7 +445,7 @@ class Shape extends Component {
               <div></div> :
               <div className='col-6'>
                 <button
-                  className='btn btn-block btn-success mb-2'
+                  className='btn btn-block btn-success'
                   onClick={e => {
                     e.preventDefault();
                     // alert('Feature not live yet! \n Check back in on Demo Night.')
@@ -425,16 +456,27 @@ class Shape extends Component {
                 </button>
               </div>}
             </div>
-          
-            <div ref={ref => (this.mount = ref)} 
-              
-            />
-            <button
-              className='btn btn-block btn-secondary'
-              onClick={e => clearThree(scene)}
-            >
-              Clear Canvas
-            </button>
+            <div className='row mb-2 border border-dark rounded-lg py-1'>
+              <div className='col-12'>
+                <h6 className='d-inline float-left align-center'>Controls:</h6>
+                <ToggleButtonGroup type="checkbox" value={this.state.extrude} onChange={this.update}>
+                  <ToggleButton value={1} variant="info">{this.state.extrude ? 'Flatten' : 'Make 3D' }</ToggleButton>
+                </ToggleButtonGroup>
+              </div>
+            </div>
+
+            <div ref={ref => (this.mount = ref)} />
+
+            <div className='row'>
+              <div className='col-12'>
+                <button
+                  className='btn btn-block btn-secondary'
+                  onClick={e => clearThree(scene)}
+                >
+                  Clear Canvas
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
