@@ -298,7 +298,8 @@ class Shape extends Component {
     super(props);
     this.state = {
       circle: true,
-      extrude: false
+      extrude: false,
+      isLoading: false
     }
     this.createGUI = this.createGUI.bind(this);
     this.saveSVG = this.saveSVG.bind(this);
@@ -351,7 +352,8 @@ class Shape extends Component {
     let currentUserId = this.props.auth.id === '' || this.props.auth.id === undefined ? 'guest' : this.props.auth.id;
     let publicUrl = `https://minddesign-assets.s3.amazonaws.com/${currentUserId}/designs/${this.props.currentModel}`;
     clearThree(scene);
-    loadSVG(publicUrl, this.state.extrude);   
+    loadSVG(publicUrl, this.state.extrude);
+    // this.setState({isLoading: false});   
     animate();
   }
 

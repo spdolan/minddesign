@@ -40,7 +40,9 @@ function GuestHelperModal(props) {
 
 const LandingPage = ({auth}) => {
 
-  const [modalShow, setModalShow] = React.useState(true);
+  const modalOnLanding = !auth.authenticated;
+
+  const [modalShow, setModalShow] = React.useState(modalOnLanding);
 
   const renderGreeting = (auth) => {
     return auth.authenticated ?

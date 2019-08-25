@@ -33,7 +33,7 @@ class DesignDetailView extends React.Component {
       return (
         <>
         <div className='row'>
-          <div classname='col-12'>
+          <div className='col-12'>
             <div>
               Stats for {this.props.designs[0].designName}<br></br>
               Makes: 5<br></br>
@@ -42,7 +42,7 @@ class DesignDetailView extends React.Component {
           </div>
         </div>
         <div className='row'>
-          <div classname='col-8'>
+          <div className='col-8'>
             <Shape url='user' />
           </div>
         </div>
