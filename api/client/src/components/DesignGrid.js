@@ -12,7 +12,7 @@ class DesignGrid extends React.Component {
   }
 
   componentDidMount() {
-    this.props.getUserDesigns(this.props.auth.id)
+    // this.props.getUserDesigns(this.props.auth.id)
   }
 
   renderDesigns(designArray) {
@@ -35,7 +35,7 @@ class DesignGrid extends React.Component {
         </div>
       );
     } else
-
+      console.log(this.props.designs);
       return (
         <div className="card-columns mb-4">
           {this.renderDesigns(this.props.designs)}
@@ -46,8 +46,8 @@ class DesignGrid extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    auth: state.auth,
-    designs: state.designs
+    auth: state.auth
+    // designs: state.designs
     // categories: state.categories
   };
 }

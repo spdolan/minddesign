@@ -6,6 +6,7 @@ export const AUTH_USER = 'AUTH_USER';
 export const AUTH_ERROR = 'AUTH_ERROR';
 export const GET_DESIGN = 'GET_DESIGN';
 export const GET_DESIGNS = 'GET_DESIGNS';
+export const PUBLIC_DESIGNS = 'PUBLIC_DESIGNS';
 export const SLICE_DESIGN = 'SLICE_DESIGN';
 
 export const signup = (formProps, callback) => dispatch => {
@@ -86,11 +87,23 @@ export const downloadFile = (fileName) => dispatch => {
 
 export const getUserDesigns = (userId) => dispatch => {
 
-  axios.get(`/users/${userId}/designs`)
+  axios.get(`/designs/${userId}`)
   .then(function (response) {
     // console.log(response);
     dispatch({ type: GET_DESIGNS, payload: response.data });
   })
+    .catch(function (error) {
+      console.log(error);
+    });
+};
+
+export const getPublicDesigns = () => dispatch => {
+
+  axios.get(`/designs/public`)
+    .then(function (response) {
+      // console.log(response);
+      dispatch({ type: PUBLIC_DESIGNS, payload: response.data });
+    })
     .catch(function (error) {
       console.log(error);
     });

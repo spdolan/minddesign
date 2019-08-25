@@ -101,8 +101,8 @@ var exportASCII = function(meshGroup) {
   saveString(result, 'thing.stl');
 }
 var exportBinary = function (meshGroup, thingName) {
-  console.log(meshGroup);
-  scaleGroup(meshGroup, 0.25);
+  
+  scaleGroup(meshGroup, 0.20);
   meshGroup.updateMatrixWorld(true);
   var result = exporter.parse(meshGroup, { binary: true });
   saveArrayBuffer(result, `${thingName}.stl`);
@@ -236,7 +236,8 @@ var loadSVG = function (svgUrl, extrude){
             
             if (extrude) {
               const fillGeometry = new THREE.ExtrudeBufferGeometry(shape, extrudeSettings);
-              group.add(fillGeometry);
+              const fillMesh = new THREE.Mesh(fillGeometry, material);
+              group.add(fillMesh);
                                
             } else {
               const geometry = new THREE.ShapeBufferGeometry(shape);
@@ -293,6 +294,10 @@ var loadSVG = function (svgUrl, extrude){
     // called when loading is in progresses
     function (xhr) {
       // console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+      if (xhr.lengthComputable) {
+        var percentComplete = xhr.loaded / xhr.total * 100;
+        console.log(Math.round(percentComplete, 2) + '% rendered');
+      }
 
     },
     // called when loading has errors
@@ -396,18 +401,6 @@ class Shape extends Component {
     link.click();
   } 
 
-  // createGcode = (modelName) => {
-
-  //   cmd.get(
-  //     'pwd',
-  //     function (err, data, stderr) {
-  //       console.log('the current working dir is : ', data)
-  //     }
-  //   );
-  //   // let grabModelName = modelName.split('.');
-  //   // let createGcode = `pslicer --load config.ini --export-gcode ${grabModelName[0]}.stl`;
-  //   // cmd.run(createGcode);
-  // }
 
   update = () => {
     // let loadingSpinner = <i className="fas fa-spinner fa-pulse"></i>;
@@ -416,7 +409,9 @@ class Shape extends Component {
     let currentUserId = this.props.auth.id === '' ? 'guest' : this.props.auth.id;
     let myUrl = `https://minddesign-assets.s3.amazonaws.com/${currentUserId}/designs/${this.props.currentModel}`;
     this.setState({ extrude: !this.state.extrude}, () => {
+      alert(`Loading, one moment please - our trusty gnomes are ${this.state.extrude ? 'Extrud' : 'Flatten' }ing your design...`)
       loadSVG(myUrl, this.state.extrude);
+      // this.setState({ isLoading: !this.state.isLoading })
     })
     // loadingSpinner.destroy();
   }
@@ -448,23 +443,27 @@ class Shape extends Component {
             <div className='row mb-2 border border-dark rounded-lg py-1'>
               <div className='col-12'>
                 <h6 className='d-inline float-left align-center'>Controls:</h6>
-                <ToggleButtonGroup type="checkbox" value={this.state.extrude} onChange={this.update}>
+                <ToggleButtonGroup type="checkbox" value={this.state.extrude} 
+                  onChange={this.update}
+                >
                   <ToggleButton value={1} variant="info">{this.state.extrude ? 'Flatten' : 'Make 3D' }</ToggleButton>
                 </ToggleButtonGroup>
-
-                <button
-                  className='btn btn-md btn-secondary ml-3'
-                  onClick={e => {
-                    e.preventDefault();
-                    let grabModelName = this.props.currentModel.split('.');
-                    this.props.createGcode(grabModelName[0])
-                  }}
-                >
-                  Create GCode
-                </button>
+                  {this.props.auth.authenticated && this.state.extrude ?
+                  <button
+                    className='btn btn-md btn-secondary ml-3'
+                    onClick={e => {
+                      e.preventDefault();
+                      let grabModelName = this.props.currentModel.split('.');
+                      this.props.createGcode(grabModelName[0])
+                    }}
+                  >
+                    Create GCode
+                  </button>
+                  : <div></div>}
+                
               </div>
             </div>
-            
+           
             <div ref={ref => (this.mount = ref)} />
 
             <div className='row'>

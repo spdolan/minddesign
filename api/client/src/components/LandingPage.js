@@ -16,8 +16,8 @@ const LandingPage = ({auth}) => {
   const guestGreeting = () => {
     let greetings = [
       'Let\'s start Making!',
-      'Hand drawn, beyond hand-made.',
-      'Hand-made in 2019.',
+      'Hand drawn, beyond hand made.',
+      'Hand-made for 2019.',
       'Picture beyond pixels.'
     ]
     let randomGreeting = Math.floor(Math.random() * greetings.length);

@@ -26,7 +26,7 @@ class DesignDetailView extends React.Component {
     } else if (this.props.designs.length === 0 || this.props.designs.length === undefined)
       return (
         <div>
-          <h3>It looks like that design was deleted, please try another search.</h3>
+          <h3>Your Design is loading, one moment please...</h3>
         </div>
       );
     else {

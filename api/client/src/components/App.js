@@ -9,6 +9,7 @@ import Signup from './Signup';
 import Signin from './Signin';
 import UserHome from './UserHome';
 import DesignDetailView from './DesignDetailView';
+import PublicDesigns from './PublicDesigns';
 
 class App extends Component {
   constructor(props){
@@ -24,6 +25,7 @@ class App extends Component {
             <Route exact path='/' component={LandingPage} />
             <Route exact path='/signin' component={Signin} />
             <Route exact path='/signup' component={Signup} />
+            <Route exact path='/public' component={PublicDesigns} />
             <Route exact path='/home' component={UserHome} />
             <Route exact path='/home/:designId' component={DesignDetailView} />
             <Redirect to='/' />

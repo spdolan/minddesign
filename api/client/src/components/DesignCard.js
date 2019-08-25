@@ -14,6 +14,12 @@ const DesignCard = ({ design }) => {
     return (newColor);
   }
 
+  const formatDate = (date) => {
+    let newDate = new Date(date);
+    return newDate.toLocaleDateString();
+
+  }
+
   return (
     <Link
       className='card text-center align-middle text-white bg-dark border-dark shadow'
@@ -27,7 +33,7 @@ const DesignCard = ({ design }) => {
         
       </div>
       <div className='card-footer'>
-        
+        <p>created on {formatDate(design.created_at)}</p>
       </div>
     </Link>
   );

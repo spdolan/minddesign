@@ -76,9 +76,9 @@ router.get(`/:userId/:fileName/save`, (req, res) => {
   design.designOwner = req.user._id
   design.svgLink = path
   design.designDescription = String,
-  design.likes = 0,
-  design.favorites = 0,
-  design.published = false
+  design.likes = Math.floor(Math.random() * 100),
+  design.favorites = Math.floor(Math.random() * 25),
+  design.published = true
 
   design.save(function (err, user) {
     if (err) { return next(err) }
@@ -108,6 +108,36 @@ router.get(`/:userId/:fileName/gcode`, (req, res) => {
   // cmd.run(
   //   `cd ../../Downloads/Demo\ Night && pslicer --load config.ini --export-gcode ${fileName}.stl`
   // );
+})
+
+//GET all user designs
+router.get(`/:userId`, (req, res) => {
+
+  Design
+    .find({ designOwner: req.user._id })
+    .sort({ 'updated_at': -1 })
+    .exec((err, designs) => {
+      if (err) {
+        res.status(400).send('Unable to retrieve designs');
+      }
+      // console.log(designs);
+      res.send(designs);
+    })
+})
+
+//GET all Public user designs
+router.get(`/public`, (req, res) => {
+
+  Design
+    .find({ published: true })
+    .sort({ 'updated_at': -1 })
+    .exec((err, designs) => {
+      if (err) {
+        res.status(400).send('Unable to retrieve designs');
+      }
+      // console.log(designs);
+      res.send(designs);
+    })
 })
 
 //GET single user design

@@ -13,8 +13,9 @@ const Navbar = ({ authenticated, email, name, signout }) => {
     if (authenticated) {
       return (
         <>
-          <li className='nav-item mr-3'><Link to="/home" className='btn btn-md btn-secondary'>{name}'s Designs</Link></li>
-          <li className='nav-item'>
+          <li className='nav-item mx-2'><Link to="/public" className='btn btn-md btn-light'>Published Designs</Link></li>
+          <li className='nav-item mx-2'><Link to="/home" className='btn btn-md btn-secondary'>{name}'s Designs</Link></li>
+          <li className='nav-item mx-2'>
             <button
               onClick={handleSignOutClick}
               className='btn btn-md btn-info'
@@ -27,6 +28,7 @@ const Navbar = ({ authenticated, email, name, signout }) => {
     } else {
       return (
         <>
+          <li className='nav-item mx-2'><Link to="/public" className='btn btn-sm btn-light'>Published Designs</Link></li>
           <li className='nav-item mx-2'><Link to="/signup" className='btn btn-sm btn-primary'>Sign Up</Link></li>
           <li className='nav-item mx-2'><Link to="/signin" className='btn btn-sm btn-success'>Sign In</Link></li>
         </>

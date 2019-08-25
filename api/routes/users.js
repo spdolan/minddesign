@@ -38,20 +38,4 @@ router.post('/:userId/edit', (req, res, next) => {
     });
 });
 
-//GET all user designs
-router.get(`/:userId/designs`, (req, res) => {
-  
-  Design
-    .find({ designOwner: req.user._id})
-    .sort({ 'updated_at': -1 })
-    .exec((err, designs) => {
-      if (err) {
-        res.status(400).send('Unable to retrieve designs');
-      }
-      // console.log(designs);
-      res.send(designs);
-    })
-})
-
-
 module.exports = router;

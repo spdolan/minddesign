@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { getUserDesigns } from '../actions';
+import { getPublicDesigns } from '../actions';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import DesignGrid from './DesignGrid';
 
-class UserHome extends Component {
+class PublicDesigns extends Component {
   constructor(props) {
     super(props);
     this.state = {}
@@ -12,7 +12,7 @@ class UserHome extends Component {
   }
 
   componentDidMount(){
-    this.props.getUserDesigns(this.props.auth.id)
+    this.props.getPublicDesigns(this.props.auth.id)
   }
 
   displayDesigns(){
@@ -36,16 +36,8 @@ class UserHome extends Component {
   }
 
   render() {
-    
     return (
       <>
-      <div className='row'>
-        <div className='col-12 text-center'>
-          <div className='jumbotron'>
-            <h3>{this.props.auth.name}</h3>
-          </div>
-        </div>
-      </div>
       <div className='row'>
         <div className='col-12'>
           {this.displayDesigns()}
@@ -65,7 +57,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ getUserDesigns }, dispatch);
+  return bindActionCreators({ getPublicDesigns }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserHome);
+export default connect(mapStateToProps, mapDispatchToProps)(PublicDesigns);
