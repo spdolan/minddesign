@@ -333,7 +333,8 @@ class Shape extends Component {
     // load a SVG resource
     if (this.props.currentUrl){
       clearThree(scene);
-      let myUrl = `https://minddesign-assets.s3.amazonaws.com/${this.props.auth.id}/designs/${this.props.currentModel}`;
+      let designUserId = this.props.owner ? this.props.owner : this.props.auth.id
+      let myUrl = `https://minddesign-assets.s3.amazonaws.com/${designUserId}/designs/${this.props.currentModel}`;
       loadSVG(myUrl, false);
     } else {
       loadSVG('https://minddesign-assets.s3.amazonaws.com/MDlogo-v0.svg', false);
@@ -349,7 +350,8 @@ class Shape extends Component {
 
   componentDidUpdate(){
     let currentUserId = this.props.auth.id === '' || this.props.auth.id === undefined ? 'guest' : this.props.auth.id;
-    let publicUrl = `https://minddesign-assets.s3.amazonaws.com/${currentUserId}/designs/${this.props.currentModel}`;
+    let designUserId = this.props.owner ? this.props.owner : currentUserId
+    let publicUrl = `https://minddesign-assets.s3.amazonaws.com/${designUserId}/designs/${this.props.currentModel}`;
     clearThree(scene);
     loadSVG(publicUrl, this.state.extrude);
     // this.setState({isLoading: false});   
@@ -395,7 +397,8 @@ class Shape extends Component {
 
   saveSVG = () => {
     let currentUserId = this.props.auth.id === '' ? 'guest' : this.props.auth.id;
-    let publicUrl = `https://minddesign-assets.s3.amazonaws.com/${currentUserId}/designs/${this.props.currentModel}`;
+    let designUserId = this.props.owner ? this.props.owner : currentUserId
+    let publicUrl = `https://minddesign-assets.s3.amazonaws.com/${designUserId}/designs/${this.props.currentModel}`;
     link.href = publicUrl;
     link.download = this.props.currentModel;
     link.click();
@@ -407,7 +410,8 @@ class Shape extends Component {
     // this.mount.prepend(loadingSpinner)
     clearThree(scene);
     let currentUserId = this.props.auth.id === '' ? 'guest' : this.props.auth.id;
-    let myUrl = `https://minddesign-assets.s3.amazonaws.com/${currentUserId}/designs/${this.props.currentModel}`;
+    let designUserId = this.props.owner ? this.props.owner : currentUserId
+    let myUrl = `https://minddesign-assets.s3.amazonaws.com/${designUserId}/designs/${this.props.currentModel}`;
     this.setState({ extrude: !this.state.extrude}, () => {
       alert(`Loading, one moment please - our trusty gnomes are ${this.state.extrude ? 'Extrud' : 'Flatten' }ing your design...`)
       loadSVG(myUrl, this.state.extrude);

@@ -43,7 +43,7 @@ class DesignDetailView extends React.Component {
         </div>
         <div className='row'>
           <div className='col-8'>
-            <Shape url='user' />
+              <Shape url='user' owner={this.props.designs[0].designOwner}/>
           </div>
         </div>
         </>
