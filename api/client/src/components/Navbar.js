@@ -13,9 +13,9 @@ const Navbar = ({ authenticated, email, name, signout }) => {
     if (authenticated) {
       return (
         <>
-          <li className='nav-item mx-2'><Link to="/public" className='btn btn-md btn-light'>Published Designs</Link></li>
-          <li className='nav-item mx-2'><Link to="/home" className='btn btn-md btn-secondary'>{name}'s Designs</Link></li>
-          <li className='nav-item mx-2'>
+          <li className='nav-item mx-1'><Link to="/public" className='btn btn-md btn-light'>Published Designs</Link></li>
+          <li className='nav-item mx-1'><Link to="/home" className='btn btn-md btn-secondary'>{name}'s Designs</Link></li>
+          <li className='nav-item mx-1'>
             <button
               onClick={handleSignOutClick}
               className='btn btn-md btn-info'
@@ -29,8 +29,8 @@ const Navbar = ({ authenticated, email, name, signout }) => {
       return (
         <>
           
-          <li className='nav-item mx-2'><Link to="/signup" className='btn btn-sm btn-primary'>Sign Up</Link></li>
-          <li className='nav-item mx-2'><Link to="/signin" className='btn btn-sm btn-success'>Sign In</Link></li>
+          <li className='nav-item mx-1'><Link to="/signup" className='btn btn-sm btn-primary'>Sign Up</Link></li>
+          <li className='nav-item mx-1'><Link to="/signin" className='btn btn-sm btn-success'>Sign In</Link></li>
         </>
       );
     }
@@ -39,8 +39,13 @@ const Navbar = ({ authenticated, email, name, signout }) => {
 
   return (
 
-    <nav className="navbar fixed-top navbar-dark bg-dark align-middle text-align-middle">
-      <a className="navbar-brand" href='/'>
+    <nav className="navbar navbar-expand-md fixed-top navbar-dark bg-dark align-middle text-align-middle">
+
+      <a className="navbar-toggler navbar-brand visible-sm" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarMobileBrandHome" aria-expanded="false" aria-label="Link to homepage" href='/'>
+        <img src={process.env.PUBLIC_URL + '/MD-small.png'} width="auto" height="30" className='d-inline-block align-top' alt='Mind Design' />
+      </a>
+      
+      <a className="navbar-brand collapse navbar-collapse" href='/' id="navbarTogglerDemo01">
         <img src={ process.env.PUBLIC_URL + '/MindDesignv1.png'} width="auto" height="30" className='d-inline-block align-top' alt='Mind Design'/>
       </a>
       {/* <form class="form-inline">

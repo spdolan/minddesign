@@ -396,9 +396,15 @@ class Shape extends Component {
   }
 
   saveSVG = () => {
-    let currentUserId = this.props.auth.id === '' ? 'guest' : this.props.auth.id;
-    let designUserId = this.props.owner ? this.props.owner : currentUserId
-    let publicUrl = `https://minddesign-assets.s3.amazonaws.com/${designUserId}/designs/${this.props.currentModel}`;
+    let publicUrl;
+    if (this.props.currentModel === 'MDlogo-v0.svg'){
+      publicUrl = `https://minddesign-assets.s3.amazonaws.com/MDlogo-v0.svg`
+    } else {
+      let currentUserId = this.props.auth.id === '' ? 'guest' : this.props.auth.id;
+      let designUserId = this.props.owner ? this.props.owner : currentUserId
+      publicUrl = `https://minddesign-assets.s3.amazonaws.com/${designUserId}/designs/${this.props.currentModel}`;
+    }
+   
     link.href = publicUrl;
     link.download = this.props.currentModel;
     link.click();

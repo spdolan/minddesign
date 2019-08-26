@@ -90,25 +90,28 @@ router.get(`/:userId/:fileName/save`, (req, res) => {
 
 router.get(`/:userId/:fileName/gcode`, (req, res) => {
   let { fileName } = req.params
-  runCmd = `pslicer --load config.ini --export-gcode ${fileName}.stl`
-  console.log(runCmd);
-  
-  exec(runCmd,
-    { shell: 'C:/RailsInstaller/Git/git-bash.exe',
-      cwd:  'C:/Users/snpdo/Downloads/Demo\ Night/'
-    }, 
-   (error, stdout, stderr) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      return;
-    }
-    res.send(`Design ${fileName} sucessfully converted to GCode file!`)
-  });
 
-  // cmd.run(
-  //   `cd ../../Downloads/Demo\ Night && pslicer --load config.ini --export-gcode ${fileName}.stl`
-  // );
-})
+  if (process.env.NODE_ENV === 'production') {
+    res.send(`Slic3r not included within current build, coming soon!`)
+    } 
+  else {
+    runCmd = `pslicer --load config.ini --export-gcode ${fileName}.stl`
+    console.log(runCmd);
+
+    exec(runCmd,
+      {
+        shell: 'C:/RailsInstaller/Git/git-bash.exe',
+        cwd: 'C:/Users/snpdo/Downloads/Demo\ Night/'
+      },
+      (error, stdout, stderr) => {
+        if (error) {
+          console.error(`exec error: ${error}`);
+          return;
+        }
+        res.send(`Design ${fileName} sucessfully converted to GCode file!`)
+      })
+    }
+});
 
 //GET all designs
 router.get(`/`, (req, res) => {
