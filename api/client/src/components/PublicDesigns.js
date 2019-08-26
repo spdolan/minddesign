@@ -12,7 +12,7 @@ class PublicDesigns extends Component {
   }
 
   componentDidMount(){
-    this.props.getPublicDesigns(this.props.auth.id)
+    this.props.getPublicDesigns()
   }
 
   displayDesigns(){

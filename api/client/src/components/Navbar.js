@@ -28,7 +28,7 @@ const Navbar = ({ authenticated, email, name, signout }) => {
     } else {
       return (
         <>
-          <li className='nav-item mx-2'><Link to="/public" className='btn btn-sm btn-light'>Published Designs</Link></li>
+          
           <li className='nav-item mx-2'><Link to="/signup" className='btn btn-sm btn-primary'>Sign Up</Link></li>
           <li className='nav-item mx-2'><Link to="/signin" className='btn btn-sm btn-success'>Sign In</Link></li>
         </>

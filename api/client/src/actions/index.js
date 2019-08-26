@@ -87,7 +87,7 @@ export const downloadFile = (fileName) => dispatch => {
 
 export const getUserDesigns = (userId) => dispatch => {
 
-  axios.get(`/designs/${userId}`)
+  axios.get(`/users/${userId}/`)
   .then(function (response) {
     // console.log(response);
     dispatch({ type: GET_DESIGNS, payload: response.data });
@@ -99,7 +99,9 @@ export const getUserDesigns = (userId) => dispatch => {
 
 export const getPublicDesigns = () => dispatch => {
 
-  axios.get(`/designs/public`)
+  axios.get(`/designs/`, {
+    public: true
+  })
     .then(function (response) {
       // console.log(response);
       dispatch({ type: PUBLIC_DESIGNS, payload: response.data });

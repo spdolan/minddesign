@@ -19,6 +19,21 @@ router.param('userId', function (req, res, next) {
   })
 });
 
+//GET all user designs
+router.get(`/:userId`, (req, res) => {
+
+  Design
+    .find({ designOwner: req.user._id })
+    .sort({ 'updated_at': -1 })
+    .exec((err, designs) => {
+      if (err) {
+        res.status(400).send('Unable to retrieve that user\'s designs');
+      }
+      // console.log(designs);
+      res.send(designs);
+    })
+})
+
 //GET for user information
 
 //POST to update user information

@@ -17,7 +17,7 @@ const exec = require('child_process').exec;
 
 router.param('userId', function (req, res, next) {
   let { userId } = req.params;
-  if(userId === 'guest'){
+  if (userId === 'guest' || userId === 'all'){
     req.user = { _id: 'guest' };
     next();
   } else {
@@ -110,33 +110,22 @@ router.get(`/:userId/:fileName/gcode`, (req, res) => {
   // );
 })
 
-//GET all user designs
-router.get(`/:userId`, (req, res) => {
+//GET all designs
+router.get(`/`, (req, res) => {
+  let { public } = req.query;
+  let queryObject = {}
+  if(public){
+    queryObject.published = true
+  }
 
   Design
-    .find({ designOwner: req.user._id })
-    .sort({ 'updated_at': -1 })
-    .exec((err, designs) => {
+    .find(queryObject)
+    .exec((err, design) => {
       if (err) {
-        res.status(400).send('Unable to retrieve designs');
+        res.status(400).send('Unable to find that design');
       }
-      // console.log(designs);
-      res.send(designs);
-    })
-})
 
-//GET all Public user designs
-router.get(`/public`, (req, res) => {
-
-  Design
-    .find({ published: true })
-    .sort({ 'updated_at': -1 })
-    .exec((err, designs) => {
-      if (err) {
-        res.status(400).send('Unable to retrieve designs');
-      }
-      // console.log(designs);
-      res.send(designs);
+      res.send(design);
     })
 })
 

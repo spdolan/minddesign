@@ -30,7 +30,7 @@ class DesignGrid extends React.Component {
     } else if (this.props.designs.length === 0) {
       return (
         <div>
-          <h4>Hey! Looks like you don't have any designs yet!</h4>
+          <h4>Hey! Looks like there aren't any designs here yet!</h4>
           <h4>Unless we're briefly searching, head to the homepage and make something awesome.</h4>
         </div>
       );
