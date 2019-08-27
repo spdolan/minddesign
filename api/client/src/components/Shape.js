@@ -317,7 +317,8 @@ class Shape extends Component {
     this.state = {
       circle: true,
       extrude: false,
-      isLoading: false
+      isLoading: false,
+      downloaded: false
     }
 
     this.saveSVG = this.saveSVG.bind(this);
@@ -366,6 +367,7 @@ class Shape extends Component {
           e.preventDefault();
           let grabModelName = this.props.currentModel.split('.');
           // alert('Feature not live yet! \n Check back in on Demo Night.');
+          this.setState({ downloaded: true });
           exportBinary(group, grabModelName[0]);
         }}
       >
@@ -458,7 +460,7 @@ class Shape extends Component {
                 >
                   <ToggleButton value={1} variant="info">{this.state.extrude ? 'Flatten' : 'Make 3D' }</ToggleButton>
                 </ToggleButtonGroup>
-                  {this.props.auth.authenticated && this.state.extrude ?
+                {this.props.auth.authenticated && this.state.extrude && this.state.downloaded ?
                   <button
                     className='btn btn-md btn-secondary ml-3'
                     onClick={e => {

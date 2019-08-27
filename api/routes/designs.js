@@ -123,6 +123,7 @@ router.get(`/`, (req, res) => {
 
   Design
     .find(queryObject)
+    .sort({ 'updated_at': -1 })
     .exec((err, design) => {
       if (err) {
         res.status(400).send('Unable to find that design');
