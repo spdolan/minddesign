@@ -1,4 +1,4 @@
-### MindDesign
+### MindDesign - https://mind-design.herokuapp.com/
 <details><summary>Sean's Final App for Project Shift</summary> 
   
 * This application allows for the creation and eventual 3D printing of custom things.
