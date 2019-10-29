@@ -1,11 +1,9 @@
-### MindDesign
-<details><summary>Sean's Final App for Project Shift</summary> 
+### MindDesign - https://mind-design.herokuapp.com/
+<summary>Sean's Final App for Project Shift</summary> 
   
 * This application allows for the creation and eventual 3D printing of custom things.
 * Optimized for Heroku deployment, with the api folder serving both back and front end.
 * Stack is Mongo/Express/React/Redux/Node.js
-
-</details>
 
 <details><summary>Getting Things Together</summary> 
   
