@@ -1,0 +1,15 @@
+@import 'config';
+
+body {
+  background: $primary-color;
+  color: set-text-color($primary-color);
+  height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1;
+  align-items: center;
+  margin: auto;
+}
+
+.text-secondary {
+  color: $secondary-color;
+}
