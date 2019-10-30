@@ -7,8 +7,6 @@ import thunk from "redux-thunk";
 import rootReducer from "./reducers/index";
 
 import App from './components/App';
-import Signin from './components/Signin';
-import Signup from './components/Signup';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'font-awesome/css/font-awesome.css';

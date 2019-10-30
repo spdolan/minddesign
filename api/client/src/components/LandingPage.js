@@ -1,8 +1,5 @@
 import React from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
-import { } from '../actions';
 import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
 import Shape from './Shape';
 import Canvas from './Canvas';
 import GuestHelperModal from './GuestHelperModal'
@@ -66,10 +63,6 @@ function mapStateToProps(state) {
     auth: state.auth
     // categories: state.categories
   };
-}
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({}, dispatch);
 }
 
 export default connect(mapStateToProps, null)(LandingPage);
