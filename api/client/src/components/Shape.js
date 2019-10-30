@@ -3,14 +3,9 @@ import { downloadFile, saveDesign, createGcode } from '../actions';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import THREE from "../three";
-import { GUI } from 'three/examples/js/libs/dat.gui.min.js';
-import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import { animate, onWindowResize, clearThree, exportBinary, arrayToPoints, setInitialScale, createStampBase, createBasicMaterial} from '../services/three_helpers';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
-import Button from 'react-bootstrap/Button';
 import ToggleButton from 'react-bootstrap/ToggleButton';
-import LoadingModal from './LoadingModal';
-import cmd from 'node-cmd';
 
 // === THREE.JS CODE START ===
 var scene = new THREE.Scene();
@@ -31,6 +26,7 @@ if (window.innerWidth <= 768) {
 }
 var camera = new THREE.PerspectiveCamera(50, threeWidth / threeHeight, 1, 1000);
 camera.position.set(0, 0, 200);
+
 var renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(threeWidth, threeHeight);
@@ -40,164 +36,12 @@ controls.screenSpacePanning = true;
 
 // instantiate a loader, exporter, and group
 var loader = new THREE.SVGLoader();
-var exporter = new THREE.STLExporter();
 var group;
 
 //append a link, from our Three.js examples
 var link = document.createElement('a');
 link.style.display = 'none';
 document.body.appendChild(link);
-
-// console.log(loader);
-var animate = function () {
-  requestAnimationFrame(animate);
-  renderer.render(scene, camera);
-};
-
-var onWindowResize = function () {
-
-  if (window.innerWidth <= 768) {
-    threeWidth = ((window.innerWidth * 0.8));
-    threeHeight = ((window.innerHeight * 0.5));
-  } else {
-    threeWidth = ((window.innerWidth * 0.37));
-    threeHeight = ((window.innerHeight * 0.5));
-  }
-
-  camera.aspect = threeWidth / threeHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(threeWidth, threeHeight);
-}
-
-var clearThree = function (obj, num = 1) {
-  while (obj.children.length > num) {
-    clearThree(obj.children[(obj.children.length - 1)])
-    obj.remove(obj.children[(obj.children.length - 1)]);
-  }
-  if (obj.geometry) obj.geometry.dispose()
-  // console.log(obj.material)
-
-  if (obj.material !== undefined){
-    if (obj.material.length !== undefined) {
-      obj.material.forEach(material => {
-        material.dispose();
-      });
-    } else {
-      obj.material.dispose();
-    }
-  }
-  if (obj.texture) obj.texture.dispose()
-} 
-
-var scaleGroup = function(meshGroup, scalar){
-  meshGroup.scale.multiplyScalar(scalar);
-  //three.js faces "away" from our perspective, so update
-  meshGroup.scale.y *= - 1;
-}
-
-var exportASCII = function(meshGroup) {
-  var result = exporter.parse(meshGroup);
-  // let objectExtension = objectName + '.stl'
-  saveString(result, 'thing.stl');
-}
-var exportBinary = function (meshGroup, thingName) {
-  
-  scaleGroup(meshGroup, 0.20);
-  meshGroup.updateMatrixWorld(true);
-  var result = exporter.parse(meshGroup, { binary: true });
-  saveArrayBuffer(result, `${thingName}.stl`);
-  clearThree(scene, 2);
-  // scaleGroup(meshGroup, 6.1);
-  // meshGroup.updateMatrixWorld(true);
-}
-
-var saveString = function(text, filename) {
-  save(new Blob([text], { type: 'text/plain' }), filename);
-}
-var saveArrayBuffer = function(buffer, filename) {
-  save(new Blob([buffer], { type: 'application/octet-stream' }), filename);
-}
-
-var save = function (blob, filename) {
-  link.href = URL.createObjectURL(blob);
-  link.download = filename;
-  link.click();
-}
-
-
-
-const arrayToPoints = function(array){
-  let removeZeroArray = array.filter(point => { return point !== 0 });  
-  let newArray = [];
-  for(var i = 0; i < removeZeroArray.length; i+=2){
-    let myPoint = new THREE.Vector2(removeZeroArray[i], removeZeroArray[i+1]);
-    newArray.push(myPoint);
-  }
-  return newArray;
-}
-
-const setInitialScale = (svgUrl) => {
-  var scalarSettings;
-
-  //select between true/false for extrude and check for remote sig file (v1 of app)
-  //v2 of app will take in remote url and not be concerned with naming
-  if (!svgUrl.includes('tiger')) {
-    scalarSettings = 0.6;
-    group.position.x = -85;
-    group.position.y = 85;
-  }
-  else {
-    scalarSettings = 0.25;
-    group.position.x = -70;
-    group.position.y = 70;
-  }
-
-  //update our overall group with determined settings
-  scaleGroup(group, scalarSettings);
-  // group.scale.y *= - 1;
-  //forces our transformations
-  group.updateMatrixWorld(true);
-}
-
-const createStampBase = (extrude, shape, group, materialArray, svgUrl) => {
-  
-  var boxShape = new THREE.BoxHelper(group, 0xffff00);
-  let groupCenterX = boxShape.geometry.boundingSphere.center.x;
-  let groupCenterY = boxShape.geometry.boundingSphere.center.y;
-  
-  if(extrude && !svgUrl.includes('tiger')){
-    var baseShape;
-    if (shape === 'circle') {
-      var baseRadius = (1 / group.scale.x) * boxShape.geometry.boundingSphere.radius;
-      var baseHeight = 2;
-      var baseGeometry = new THREE.CylinderBufferGeometry(baseRadius, baseRadius, baseHeight, 64);
-      baseShape = new THREE.Mesh(baseGeometry, materialArray);
-      baseShape.position.set((1 / group.scale.x) * (Math.abs(group.position.x) + groupCenterX), -(1 / group.scale.y) * (Math.abs(group.position.y) - groupCenterY), baseHeight / 2);
-      baseShape.rotation.set(Math.PI / 2, 0, 0);
-      
-    } else if (shape === 'square'){
-      baseShape = new THREE.BoxHelper(group, 0xffff00);
-      
-    }
-
-    group.add(baseShape);
-    scene.updateMatrixWorld(true);
-  }
-}
-
-const createBasicMaterial = (color, opacity, transparent) => {
-  let myMaterial = new THREE.MeshBasicMaterial({
-    color: new THREE.Color().setStyle(color),
-    opacity: opacity,
-    transparent: transparent,
-    side: THREE.DoubleSide,
-    depthWrite: false
-    // wireFrame: false
-
-  });
-
-  return myMaterial;
-}
 
 var loadSVG = function (svgUrl, extrude){
   // load a SVG resource
@@ -219,7 +63,7 @@ var loadSVG = function (svgUrl, extrude){
         bevelSegments: 1
       };
 
-      setInitialScale(svgUrl);
+      setInitialScale(group, svgUrl);
 
       for (let i = 0; i < paths.length; i++) {
         //let's add our printing base here!
@@ -288,7 +132,7 @@ var loadSVG = function (svgUrl, extrude){
       //place cylinder material here
       var baseMaterial = createBasicMaterial(0x00ffff, 0.3, true);
       //add our base helper with array of materials
-      createStampBase(extrude, 'circle', group, [strokeMaterial, baseMaterial], svgUrl)
+      createStampBase(scene, extrude, 'circle', group, [strokeMaterial, baseMaterial], svgUrl)
       // createStampBase(extrude, 'square', group, [strokeMaterial, baseMaterial], svgUrl)
     },
     // called when loading is in progresses
@@ -341,8 +185,8 @@ class Shape extends Component {
       loadSVG('https://minddesign-assets.s3.amazonaws.com/MDlogo-v0.svg', false);
     }
     
-    window.addEventListener('resize', onWindowResize, false);
-    animate();
+    window.addEventListener('resize', onWindowResize(camera, renderer, threeWidth, threeHeight), false);
+    animate(scene, camera, renderer);
   }
 
   componentWillUnmount(){
@@ -368,7 +212,7 @@ class Shape extends Component {
           let grabModelName = this.props.currentModel.split('.');
           // alert('Feature not live yet! \n Check back in on Demo Night.');
           this.setState({ downloaded: true });
-          exportBinary(group, grabModelName[0]);
+          exportBinary(scene, link, group, grabModelName[0]);
         }}
       >
         Download As 3D Mini-Stamp
