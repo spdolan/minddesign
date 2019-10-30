@@ -3,7 +3,7 @@ import { downloadFile, saveDesign, createGcode } from '../actions';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import THREE from "../three";
-import { onWindowResize, clearThree, exportBinary, arrayToPoints, setInitialScale, createStampBase, createBasicMaterial} from '../services/three_helpers';
+import { onWindowResize, clearThree, exportBinary, arrayToPoints, setInitialScale, createStampBase, createBasicMaterial} from '../services/threeHelpers;
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 
@@ -35,7 +35,7 @@ renderer.setSize(threeWidth, threeHeight);
 var controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.screenSpacePanning = true;
 
-// instantiate a loader, exporter, and group
+// instantiate a loader and group
 var loader = new THREE.SVGLoader();
 var group;
 
@@ -45,7 +45,6 @@ link.style.display = 'none';
 document.body.appendChild(link);
 
 const animate = () => {
-
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
 };
