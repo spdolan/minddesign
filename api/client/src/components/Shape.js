@@ -3,7 +3,7 @@ import { downloadFile, saveDesign, createGcode } from '../actions';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import THREE from "../three";
-import { animate, onWindowResize, clearThree, exportBinary, arrayToPoints, setInitialScale, createStampBase, createBasicMaterial} from '../services/three_helpers';
+import { onWindowResize, clearThree, exportBinary, arrayToPoints, setInitialScale, createStampBase, createBasicMaterial} from '../services/three_helpers';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 
@@ -30,6 +30,7 @@ camera.position.set(0, 0, 200);
 var renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(threeWidth, threeHeight);
+
 //add in pan/view options
 var controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.screenSpacePanning = true;
@@ -42,6 +43,12 @@ var group;
 var link = document.createElement('a');
 link.style.display = 'none';
 document.body.appendChild(link);
+
+const animate = () => {
+
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+};
 
 var loadSVG = function (svgUrl, extrude){
   // load a SVG resource
@@ -186,7 +193,7 @@ class Shape extends Component {
     }
     
     window.addEventListener('resize', onWindowResize(camera, renderer, threeWidth, threeHeight), false);
-    animate(scene, camera, renderer);
+    animate();
   }
 
   componentWillUnmount(){

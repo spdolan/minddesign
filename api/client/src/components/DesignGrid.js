@@ -35,7 +35,7 @@ class DesignGrid extends React.Component {
         </div>
       );
     } else
-      console.log(this.props.designs);
+      
       return (
         <div className="card-columns mb-4">
           {this.renderDesigns(this.props.designs)}

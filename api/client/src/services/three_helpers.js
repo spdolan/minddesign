@@ -2,11 +2,6 @@ import THREE from "../three";
 
 export const exporter = new THREE.STLExporter();
 
-export const animate = (scene, camera, renderer) => {
-  requestAnimationFrame(animate);
-  renderer.render(scene, camera);
-};
-
 export const onWindowResize = (camera, renderer, threeWidth, threeHeight) => {
 
   if (window.innerWidth <= 768) {

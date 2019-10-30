@@ -8,6 +8,7 @@
     "bootstrap": "^4.3.1",
     "child_process": "^1.0.2",
     "font-awesome": "^4.7.0",
+    "jest": "^24.9.0",
     "localforage": "^1.7.3",
     "motion-ui": "^2.0.3",
     "node-cmd": "^3.0.0",
