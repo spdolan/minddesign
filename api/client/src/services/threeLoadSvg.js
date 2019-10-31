@@ -21,14 +21,13 @@ const addExtrudedMeshToGroup = (vectorArray, strokeMaterial, group) => {
 }
 
 const createMeshFromSubPath = (subPath, extrude, pathStyle, strokeMaterial, group) => {
-  let strokeMesh;
   let strokeGeometry = new THREE.SVGLoader.pointsToStroke(subPath.getPoints(), pathStyle);
   if (extrude) {
     const wireTriangles = coordinateArrayToVector2TriangleArray(strokeGeometry.attributes.position.array);
     addExtrudedMeshToGroup(wireTriangles, strokeMaterial, group);
   }
   else {
-    strokeMesh = new THREE.Mesh(strokeGeometry, strokeMaterial);
+    const strokeMesh = new THREE.Mesh(strokeGeometry, strokeMaterial);
     group.add(strokeMesh);
   }
 }
@@ -55,30 +54,33 @@ export const loadSVG = function (scene, group, svgUrl, extrude) {
       const paths = data.paths;
       group = new THREE.Group();
       setInitialScale(group, svgUrl);
+      let strokeMaterial;
 
-      for (let i = 0; i < paths.length; i++) {
-        const path = paths[i];
+      paths.forEach(path => {
+        // create fill display
         const fillColor = path.userData.style.fill;
         if (fillColor !== undefined && fillColor !== 'none') {
           const material = createBasicMaterial(fillColor, path.userData.style.fillOpacity, path.userData.style.fillOpacity < 1);
           const shapes = path.toShapes(true);
-          // eslint-disable-next-line no-loop-func
           shapes.forEach(shape => {
             const shapeMesh = createMeshFromShape(shape, extrude, material);
             group.add(shapeMesh);
           });
         }
+
+        // create stroke display
         const strokeColor = path.userData.style.stroke;
         if (strokeColor !== undefined && strokeColor !== 'none') {
-          var strokeMaterial = createBasicMaterial(strokeColor, path.userData.style.strokeOpacity, path.userData.style.strokeOpacity < 1);
-          for (let k = 0; k < path.subPaths.length; k++) {
-            const subPath = path.subPaths[k];
+          strokeMaterial = createBasicMaterial(strokeColor, path.userData.style.strokeOpacity, path.userData.style.strokeOpacity < 1);
+          path.subPaths.forEach(subPath => {
             createMeshFromSubPath(subPath, extrude, path.userData.style, strokeMaterial, group);
-          }
-          scene.add(group);
+          });
         }
-      }
+      });
+      
+      scene.add(group);
       //place cylinder material here
+      
       const baseMaterial = createBasicMaterial(0x00ffff, 0.3, true);
       //add our base helper with array of materials
       createStampBase(scene, extrude, 'circle', group, [strokeMaterial, baseMaterial], svgUrl)
