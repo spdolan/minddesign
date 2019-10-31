@@ -11,18 +11,21 @@ const extrudeSettings = {
   bevelSegments: 1
 };
 
+const addExtrudedMeshToGroup = (vectorArray, strokeMaterial, group) => {
+  vectorArray.forEach((vectorTriangle) => {
+    const newGeometry = new THREE.Shape(vectorTriangle);
+    const threeDGeometry = new THREE.ExtrudeBufferGeometry(newGeometry, extrudeSettings);
+    const strokeMesh = new THREE.Mesh(threeDGeometry, strokeMaterial);
+    group.add(strokeMesh);
+  });
+}
+
 const createMeshFromSubPath = (subPath, extrude, pathStyle, strokeMaterial, group) => {
   let strokeMesh;
   let strokeGeometry = new THREE.SVGLoader.pointsToStroke(subPath.getPoints(), pathStyle);
   if (extrude) {
     const wireTriangles = coordinateArrayToVector2TriangleArray(strokeGeometry.attributes.position.array);
-    // eslint-disable-next-line no-loop-func
-    wireTriangles.forEach((vectorTriangle) => {
-      const newGeometry = new THREE.Shape(vectorTriangle);
-      const threeDGeometry = new THREE.ExtrudeBufferGeometry(newGeometry, extrudeSettings);
-      strokeMesh = new THREE.Mesh(threeDGeometry, strokeMaterial);
-      group.add(strokeMesh);
-    });
+    addExtrudedMeshToGroup(wireTriangles, strokeMaterial, group);
   }
   else {
     strokeMesh = new THREE.Mesh(strokeGeometry, strokeMaterial);
@@ -32,7 +35,6 @@ const createMeshFromSubPath = (subPath, extrude, pathStyle, strokeMaterial, grou
 
 const createMeshFromShape = (shape, extrude, material) => {
   let geometry, mesh;
-
   if (extrude) {
     geometry = new THREE.ExtrudeBufferGeometry(shape, extrudeSettings);
     mesh = new THREE.Mesh(geometry, material);
@@ -50,18 +52,13 @@ export const loadSVG = function (scene, group, svgUrl, extrude) {
     svgUrl,
     // called when the resource is loaded
     function (data) {
-
       const paths = data.paths;
       group = new THREE.Group();
-
       setInitialScale(group, svgUrl);
 
       for (let i = 0; i < paths.length; i++) {
-        //let's add our printing base here!
-
         const path = paths[i];
         const fillColor = path.userData.style.fill;
-
         if (fillColor !== undefined && fillColor !== 'none') {
           const material = createBasicMaterial(fillColor, path.userData.style.fillOpacity, path.userData.style.fillOpacity < 1);
           const shapes = path.toShapes(true);
@@ -71,35 +68,16 @@ export const loadSVG = function (scene, group, svgUrl, extrude) {
             group.add(shapeMesh);
           });
         }
-
         const strokeColor = path.userData.style.stroke;
         if (strokeColor !== undefined && strokeColor !== 'none') {
           var strokeMaterial = createBasicMaterial(strokeColor, path.userData.style.strokeOpacity, path.userData.style.strokeOpacity < 1);
-
           for (let k = 0; k < path.subPaths.length; k++) {
             const subPath = path.subPaths[k];
-            let strokeMesh, threeDGeometry;
-            let strokeGeometry = new THREE.SVGLoader.pointsToStroke(subPath.getPoints(), path.userData.style);
-            if (extrude) {
-              const wireTriangles = coordinateArrayToVector2TriangleArray(strokeGeometry.attributes.position.array);
-              // eslint-disable-next-line no-loop-func
-              wireTriangles.forEach((vectorTriangle) => {
-                const newGeometry = new THREE.Shape(vectorTriangle);
-                threeDGeometry = new THREE.ExtrudeBufferGeometry(newGeometry, extrudeSettings);
-                strokeMesh = new THREE.Mesh(threeDGeometry, strokeMaterial);
-                group.add(strokeMesh);
-              });
-            }
-            else {
-              strokeMesh = new THREE.Mesh(strokeGeometry, strokeMaterial);
-              group.add(strokeMesh);
-            }
+            createMeshFromSubPath(subPath, extrude, path.userData.style, strokeMaterial, group);
           }
-
           scene.add(group);
         }
       }
-
       //place cylinder material here
       const baseMaterial = createBasicMaterial(0x00ffff, 0.3, true);
       //add our base helper with array of materials
@@ -113,13 +91,10 @@ export const loadSVG = function (scene, group, svgUrl, extrude) {
         const percentComplete = xhr.loaded / xhr.total * 100;
         console.log(Math.round(percentComplete, 2) + '% rendered');
       }
-
     },
     // called when loading has errors
     function (error) {
-
       console.log('An error happened');
-
     }
   );
 }
