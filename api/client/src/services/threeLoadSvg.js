@@ -2,12 +2,35 @@ import THREE from "../three";
 import { setInitialScale, createStampBase, createBasicMaterial, coordinateArrayToVector2TriangleArray } from '../services/threeHelpers';
 
 const loader = new THREE.SVGLoader();
+const extrudeSettings = {
+  depth: 10,
+  steps: 1,
+  bevelEnabled: false,
+  bevelThickness: 2,
+  bevelSize: 4,
+  bevelSegments: 1
+};
 
-const convertPointsToMesh = () => {
-
+const createMeshFromSubPath = (subPath, extrude, pathStyle, strokeMaterial, group) => {
+  let strokeMesh;
+  let strokeGeometry = new THREE.SVGLoader.pointsToStroke(subPath.getPoints(), pathStyle);
+  if (extrude) {
+    const wireTriangles = coordinateArrayToVector2TriangleArray(strokeGeometry.attributes.position.array);
+    // eslint-disable-next-line no-loop-func
+    wireTriangles.forEach((vectorTriangle) => {
+      const newGeometry = new THREE.Shape(vectorTriangle);
+      const threeDGeometry = new THREE.ExtrudeBufferGeometry(newGeometry, extrudeSettings);
+      strokeMesh = new THREE.Mesh(threeDGeometry, strokeMaterial);
+      group.add(strokeMesh);
+    });
+  }
+  else {
+    strokeMesh = new THREE.Mesh(strokeGeometry, strokeMaterial);
+    group.add(strokeMesh);
+  }
 }
 
-const createMeshFromShape = (shape, extrude, extrudeSettings = {}, material) => {
+const createMeshFromShape = (shape, extrude, material) => {
   let geometry, mesh;
 
   if (extrude) {
@@ -31,15 +54,6 @@ export const loadSVG = function (scene, group, svgUrl, extrude) {
       const paths = data.paths;
       group = new THREE.Group();
 
-      const extrudeSettings = {
-        depth: 10,
-        steps: 1,
-        bevelEnabled: false,
-        bevelThickness: 2,
-        bevelSize: 4,
-        bevelSegments: 1
-      };
-
       setInitialScale(group, svgUrl);
 
       for (let i = 0; i < paths.length; i++) {
@@ -53,7 +67,7 @@ export const loadSVG = function (scene, group, svgUrl, extrude) {
           const shapes = path.toShapes(true);
           // eslint-disable-next-line no-loop-func
           shapes.forEach(shape => {
-            const shapeMesh = createMeshFromShape(shape, extrude, extrudeSettings, material);
+            const shapeMesh = createMeshFromShape(shape, extrude, material);
             group.add(shapeMesh);
           });
         }
@@ -80,7 +94,6 @@ export const loadSVG = function (scene, group, svgUrl, extrude) {
               strokeMesh = new THREE.Mesh(strokeGeometry, strokeMaterial);
               group.add(strokeMesh);
             }
-            
           }
 
           scene.add(group);
