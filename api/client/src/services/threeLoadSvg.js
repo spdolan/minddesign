@@ -1,5 +1,5 @@
 import THREE from "../three";
-import { arrayToPoints, setInitialScale, createStampBase, createBasicMaterial, coordinateArrayToVector2TriangleArray } from '../services/threeHelpers';
+import { setInitialScale, createStampBase, createBasicMaterial, coordinateArrayToVector2TriangleArray } from '../services/threeHelpers';
 
 const loader = new THREE.SVGLoader();
 
@@ -51,11 +51,11 @@ export const loadSVG = function (scene, group, svgUrl, extrude) {
         if (fillColor !== undefined && fillColor !== 'none') {
           const material = createBasicMaterial(fillColor, path.userData.style.fillOpacity, path.userData.style.fillOpacity < 1);
           const shapes = path.toShapes(true);
-          for (let j = 0; j < shapes.length; j++) {
-            const shape = shapes[j];
+          // eslint-disable-next-line no-loop-func
+          shapes.forEach(shape => {
             const shapeMesh = createMeshFromShape(shape, extrude, extrudeSettings, material);
             group.add(shapeMesh);
-          }
+          });
         }
 
         const strokeColor = path.userData.style.stroke;
