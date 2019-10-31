@@ -1,5 +1,5 @@
 import THREE from "../three";
-import { arrayToPoints, setInitialScale, createStampBase, createBasicMaterial } from '../services/threeHelpers';
+import { arrayToPoints, setInitialScale, createStampBase, createBasicMaterial, coordinateArrayToVector2TriangleArray } from '../services/threeHelpers';
 
 const loader = new THREE.SVGLoader();
 
@@ -50,7 +50,6 @@ export const loadSVG = function (scene, group, svgUrl, extrude) {
 
         if (fillColor !== undefined && fillColor !== 'none') {
           const material = createBasicMaterial(fillColor, path.userData.style.fillOpacity, path.userData.style.fillOpacity < 1);
-
           const shapes = path.toShapes(true);
           for (let j = 0; j < shapes.length; j++) {
             const shape = shapes[j];
@@ -63,33 +62,25 @@ export const loadSVG = function (scene, group, svgUrl, extrude) {
         if (strokeColor !== undefined && strokeColor !== 'none') {
           var strokeMaterial = createBasicMaterial(strokeColor, path.userData.style.strokeOpacity, path.userData.style.strokeOpacity < 1);
 
-          for (let k = 0, kl = path.subPaths.length; k < kl; k++) {
+          for (let k = 0; k < path.subPaths.length; k++) {
             const subPath = path.subPaths[k];
-            let strokeGeometry, strokeMesh, threeDGeometry;
-
+            let strokeMesh, threeDGeometry;
+            let strokeGeometry = new THREE.SVGLoader.pointsToStroke(subPath.getPoints(), path.userData.style);
             if (extrude) {
-              if (k < path.subPaths.length) {
-                strokeGeometry = new THREE.SVGLoader.pointsToStroke(subPath.getPoints(), path.userData.style);
-                let wirePoints = arrayToPoints(strokeGeometry.attributes.position.array);
-                for (let p = 0; p < wirePoints.length; p += 3) {
-                  const newGeometry = new THREE.Shape([wirePoints[p], wirePoints[p + 1], wirePoints[p + 2]]);
-                  if (newGeometry) {
-                    threeDGeometry = new THREE.ExtrudeBufferGeometry(newGeometry, extrudeSettings);
-                    strokeMesh = new THREE.Mesh(threeDGeometry, strokeMaterial);
-                    group.add(strokeMesh);
-                  }
-                }
-              }
+              const wireTriangles = coordinateArrayToVector2TriangleArray(strokeGeometry.attributes.position.array);
+              // eslint-disable-next-line no-loop-func
+              wireTriangles.forEach((vectorTriangle) => {
+                const newGeometry = new THREE.Shape(vectorTriangle);
+                threeDGeometry = new THREE.ExtrudeBufferGeometry(newGeometry, extrudeSettings);
+                strokeMesh = new THREE.Mesh(threeDGeometry, strokeMaterial);
+                group.add(strokeMesh);
+              });
             }
             else {
-              if (k < path.subPaths.length) {
-                strokeGeometry = new THREE.SVGLoader.pointsToStroke(subPath.getPoints(), path.userData.style);
-                if (strokeGeometry) {
-                  strokeMesh = new THREE.Mesh(strokeGeometry, strokeMaterial);
-                  group.add(strokeMesh);
-                }
-              }
+              strokeMesh = new THREE.Mesh(strokeGeometry, strokeMaterial);
+              group.add(strokeMesh);
             }
+            
           }
 
           scene.add(group);

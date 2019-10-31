@@ -73,8 +73,22 @@ export const save = (link, blob, filename) => {
   link.click();
 }
 
+export const coordinateArrayToVector2TriangleArray = (pointsArray) => {
+  const removeZeroArray = pointsArray.filter(point => point !== 0);
+  let vector2TriangleArray = [];
+  removeZeroArray.forEach((pointCoordinate, index) => {
+    if(index % 6 === 0){
+      let firstPoint = new THREE.Vector2(pointCoordinate, removeZeroArray[index + 1]);
+      let secondPoint = new THREE.Vector2(removeZeroArray[index + 2], removeZeroArray[index + 3]);
+      let thirdPoint = new THREE.Vector2(removeZeroArray[index + 4], removeZeroArray[index + 5]);
+      vector2TriangleArray.push([firstPoint, secondPoint, thirdPoint]);
+    }
+  });
+  return vector2TriangleArray;
+}
+
 export const arrayToPoints = (array) => {
-  let removeZeroArray = array.filter(point => { return point !== 0 });
+  const removeZeroArray = array.filter(point => {return point !== 0});
   let newArray = [];
   for (var i = 0; i < removeZeroArray.length; i += 2) {
     let myPoint = new THREE.Vector2(removeZeroArray[i], removeZeroArray[i + 1]);
