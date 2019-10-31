@@ -1,7 +1,24 @@
 import THREE from "../three";
 import { arrayToPoints, setInitialScale, createStampBase, createBasicMaterial } from '../services/threeHelpers';
 
-var loader = new THREE.SVGLoader();
+const loader = new THREE.SVGLoader();
+
+const convertPointsToMesh = () => {
+
+}
+
+const createMeshFromShape = (shape, extrude, extrudeSettings = {}, material) => {
+  let geometry, mesh;
+
+  if (extrude) {
+    geometry = new THREE.ExtrudeBufferGeometry(shape, extrudeSettings);
+    mesh = new THREE.Mesh(geometry, material);
+  } else {
+    geometry = new THREE.ShapeBufferGeometry(shape);
+    mesh = new THREE.Mesh(geometry, material); 
+  }
+  return mesh;
+}
 
 export const loadSVG = function (scene, group, svgUrl, extrude) {
   // load a SVG resource
@@ -37,18 +54,8 @@ export const loadSVG = function (scene, group, svgUrl, extrude) {
           const shapes = path.toShapes(true);
           for (let j = 0; j < shapes.length; j++) {
             const shape = shapes[j];
-
-            if (extrude) {
-              const fillGeometry = new THREE.ExtrudeBufferGeometry(shape, extrudeSettings);
-              const fillMesh = new THREE.Mesh(fillGeometry, material);
-              group.add(fillMesh);
-
-            } else {
-              const geometry = new THREE.ShapeBufferGeometry(shape);
-              const mesh = new THREE.Mesh(geometry, material);
-              group.add(mesh);
-            }
-
+            const shapeMesh = createMeshFromShape(shape, extrude, extrudeSettings, material);
+            group.add(shapeMesh);
           }
         }
 
@@ -58,9 +65,9 @@ export const loadSVG = function (scene, group, svgUrl, extrude) {
 
           for (let k = 0, kl = path.subPaths.length; k < kl; k++) {
             const subPath = path.subPaths[k];
-            var strokeGeometry, strokeMesh, threeDGeometry;
+            let strokeGeometry, strokeMesh, threeDGeometry;
 
-            if (extrude && !svgUrl.includes('tiger')) {
+            if (extrude) {
               if (k < path.subPaths.length) {
                 strokeGeometry = new THREE.SVGLoader.pointsToStroke(subPath.getPoints(), path.userData.style);
                 let wirePoints = arrayToPoints(strokeGeometry.attributes.position.array);
@@ -90,7 +97,7 @@ export const loadSVG = function (scene, group, svgUrl, extrude) {
       }
 
       //place cylinder material here
-      var baseMaterial = createBasicMaterial(0x00ffff, 0.3, true);
+      const baseMaterial = createBasicMaterial(0x00ffff, 0.3, true);
       //add our base helper with array of materials
       createStampBase(scene, extrude, 'circle', group, [strokeMaterial, baseMaterial], svgUrl)
       // createStampBase(extrude, 'square', group, [strokeMaterial, baseMaterial], svgUrl)
@@ -99,7 +106,7 @@ export const loadSVG = function (scene, group, svgUrl, extrude) {
     function (xhr) {
       // console.log((xhr.loaded / xhr.total * 100) + '% loaded');
       if (xhr.lengthComputable) {
-        var percentComplete = xhr.loaded / xhr.total * 100;
+        const percentComplete = xhr.loaded / xhr.total * 100;
         console.log(Math.round(percentComplete, 2) + '% rendered');
       }
 
