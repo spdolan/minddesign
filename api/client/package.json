@@ -26,7 +26,7 @@
     "redux-promise": "^0.6.0",
     "redux-thunk": "^2.3.0",
     "signature_pad": "^3.0.0-beta.3",
-    "three": "^0.107.0",
+    "three": "^0.137.0",
     "trim-canvas": "^0.1.2"
   },
   "scripts": {
